@@ -7,7 +7,15 @@ interface FixedExpense {
   amount: string
 }
 
-export function FixedExpensesForm() {
+interface FixedExpensesFormProps {
+  fixedExpenses: string[]
+  onFixedExpensesChange: (fixedExpenses: string[]) => void
+}
+
+export function FixedExpensesForm({
+  fixedExpenses,
+  onFixedExpensesChange,
+}: FixedExpensesFormProps) {
   const [expenses, setExpenses] = useState<FixedExpense[]>([])
   const [expenseName, setExpenseName] = useState('')
   const [amount, setAmount] = useState('')
@@ -17,6 +25,7 @@ export function FixedExpensesForm() {
     setExpenses([...expenses, {name: expenseName, amount}])
     setExpenseName('')
     setAmount('')
+    onFixedExpensesChange([...fixedExpenses, expenseName])
   }
 
   const handleRemoveExpense = (index: number) => {
@@ -42,9 +51,18 @@ export function FixedExpensesForm() {
       </div>
       <ul className="flex flex-col gap-2">
         {expenses.map((expense, idx) => (
-          <li key={idx} className="flex justify-between items-center border p-2 rounded">
-            <span>{expense.name}: ${expense.amount}</span>
-            <Button size="sm" variant="destructive" onClick={() => handleRemoveExpense(idx)}>
+          <li
+            key={idx}
+            className="flex justify-between items-center border p-2 rounded"
+          >
+            <span>
+              {expense.name}: ${expense.amount}
+            </span>
+            <Button
+              size="sm"
+              variant="destructive"
+              onClick={() => handleRemoveExpense(idx)}
+            >
               Delete
             </Button>
           </li>

@@ -1,7 +1,7 @@
 'use client'
 
 import {defineStepper} from '@stepperize/react'
-import {Fragment} from 'react'
+import {Fragment, useState} from 'react'
 
 import {Button} from '@/components/ui/button'
 import {Separator} from '@/components/ui/separator'
@@ -11,6 +11,8 @@ import {SelectYourCategories} from './select-your-categories'
 import {FixedExpensesForm} from './fixed-expenses-form'
 import {IncomeForm} from './income-form'
 import {CreateProfile} from './create-profile'
+import {Income} from '@/types/income'
+import {createUserProfile} from '@/lib/create-user-profile'
 
 const {useStepper, steps, utils} = defineStepper(
   {
@@ -40,14 +42,28 @@ const {useStepper, steps, utils} = defineStepper(
   }
 )
 
+const initialCategories = ['food', 'transport', 'health', 'education']
 interface StepperOnboardingProps {
   currency: string
 }
 
 export function StepperOnboarding({currency}: StepperOnboardingProps) {
-  const stepper = useStepper()
+  const [selectedCurrency, setSelectedCurrency] = useState<string>(currency)
+  const [categories, setCategories] = useState<string[]>(initialCategories)
+  const [incomeSources, setIncomeSources] = useState<Income[]>([])
+  const [fixedExpenses, setFixedExpenses] = useState<string[]>([])
 
+  const stepper = useStepper()
   const currentIndex = utils.getIndex(stepper.current.id)
+
+  const handleSubmit = () => {
+    createUserProfile({
+      selectedCurrency,
+      categories,
+      incomeSources,
+      fixedExpenses,
+    })
+  }
 
   return (
     <div className="space-y-6 p-6 border rounded-lg w-[500px]">
@@ -102,12 +118,32 @@ export function StepperOnboarding({currency}: StepperOnboardingProps) {
                   {stepper.current.id === step.id &&
                     stepper.switch({
                       checkYourCurrency: () => (
-                        <CheckYourCurrency currency={currency} />
+                        <CheckYourCurrency
+                          currency={selectedCurrency}
+                          onCurrencyChange={setSelectedCurrency}
+                        />
                       ),
-                      selectYourCategories: () => <SelectYourCategories />,
-                      income: () => <IncomeForm />,
-                      fixedExpenses: () => <FixedExpensesForm />,
-                      createProfile: () => <CreateProfile />,
+                      selectYourCategories: () => (
+                        <SelectYourCategories
+                          categories={categories}
+                          onCategoriesChange={setCategories}
+                        />
+                      ),
+                      income: () => (
+                        <IncomeForm
+                          incomeSources={incomeSources}
+                          onIncomeSourcesChange={setIncomeSources}
+                        />
+                      ),
+                      fixedExpenses: () => (
+                        <FixedExpensesForm
+                          fixedExpenses={fixedExpenses}
+                          onFixedExpensesChange={setFixedExpenses}
+                        />
+                      ),
+                      createProfile: () => (
+                        <CreateProfile onSubmit={handleSubmit} />
+                      ),
                     })}
                 </div>
               </div>

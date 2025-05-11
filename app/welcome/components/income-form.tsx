@@ -7,7 +7,15 @@ interface Income {
   amount: string
 }
 
-export function IncomeForm() {
+interface IncomeFormProps {
+  incomeSources: Income[]
+  onIncomeSourcesChange: (incomeSources: Income[]) => void
+}
+
+export function IncomeForm({
+  incomeSources,
+  onIncomeSourcesChange,
+}: IncomeFormProps) {
   const [incomes, setIncomes] = useState<Income[]>([])
   const [source, setSource] = useState('')
   const [amount, setAmount] = useState('')
@@ -17,6 +25,7 @@ export function IncomeForm() {
     setIncomes([...incomes, {source, amount}])
     setSource('')
     setAmount('')
+    onIncomeSourcesChange([...incomeSources, {source, amount}])
   }
 
   const handleRemoveIncome = (index: number) => {
@@ -42,9 +51,18 @@ export function IncomeForm() {
       </div>
       <ul className="flex flex-col gap-2">
         {incomes.map((income, idx) => (
-          <li key={idx} className="flex justify-between items-center border p-2 rounded">
-            <span>{income.source}: ${income.amount}</span>
-            <Button size="sm" variant="destructive" onClick={() => handleRemoveIncome(idx)}>
+          <li
+            key={idx}
+            className="flex justify-between items-center border p-2 rounded"
+          >
+            <span>
+              {income.source}: ${income.amount}
+            </span>
+            <Button
+              size="sm"
+              variant="destructive"
+              onClick={() => handleRemoveIncome(idx)}
+            >
               Delete
             </Button>
           </li>

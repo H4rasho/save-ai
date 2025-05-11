@@ -1,29 +1,31 @@
 create table users (
-  id bigint primary key generated always as identity,
-  name text not null,
-  email text unique not null,
-  currency text not null
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  email TEXT UNIQUE NOT NULL,
+  currency TEXT NOT NULL
 );
 
 create table categories (
-  id bigint primary key generated always as identity,
-  user_id bigint references users (id) on delete cascade,
-  name text not null
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER,
+  name TEXT NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 create table income_sources (
-  id bigint primary key generated always as identity,
-  user_id bigint references users (id) on delete cascade,
-  name text not null,
-  amount numeric not null
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER,
+  name TEXT NOT NULL,
+  amount NUMERIC NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 create table fixed_expenses (
-  id bigint primary key generated always as identity,
-  user_id bigint references users (id) on delete cascade,
-  category_id bigint references categories (id) on delete
-  set
-    null,
-    name text not null,
-    amount numeric not null
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER,
+  category_id INTEGER,
+  name TEXT NOT NULL,
+  amount NUMERIC NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
 );

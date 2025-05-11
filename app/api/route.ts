@@ -1,4 +1,4 @@
-import {client} from '../database/database'
+import {client} from '../../database/database'
 
 export async function POST(request: Request) {
   const body = await request.json()

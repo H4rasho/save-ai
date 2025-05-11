@@ -1,19 +1,18 @@
 'use client'
 
-import {X} from 'lucide-react'
-import {Button} from '@/components/ui/button'
-import {Input} from '@/components/ui/input'
-import {Separator} from '@/components/ui/separator'
-import {SignIn as ClerkSignIn} from '@clerk/nextjs'
 import {defineStepper} from '@stepperize/react'
-import {Fragment, useState} from 'react'
+import {Fragment} from 'react'
+
+import {Button} from '@/components/ui/button'
+import {Separator} from '@/components/ui/separator'
+import {CheckYourCurrency} from './check-your-currency'
+import {SelectYourCategories} from './select-your-categories'
+
+import {FixedExpensesForm} from './fixed-expenses-form'
+import {IncomeForm} from './income-form'
+import {CreateProfile} from './create-profile'
 
 const {useStepper, steps, utils} = defineStepper(
-  {
-    id: 'signIn',
-    title: 'Sign In',
-    description: 'Sign in to your account',
-  },
   {
     id: 'checkYourCurrency',
     title: 'Check your Currency',
@@ -23,6 +22,21 @@ const {useStepper, steps, utils} = defineStepper(
     id: 'selectYourCategories',
     title: 'Select your Categories',
     description: 'Select your Categories',
+  },
+  {
+    id: 'income',
+    title: 'Income',
+    description: 'Add your income sources',
+  },
+  {
+    id: 'fixedExpenses',
+    title: 'Fixed Expenses',
+    description: 'Add your fixed expenses',
+  },
+  {
+    id: 'createProfile',
+    title: 'Create Profile',
+    description: 'Finalize your profile',
   }
 )
 
@@ -87,11 +101,13 @@ export function StepperOnboarding({currency}: StepperOnboardingProps) {
                 <div className="flex-1 my-4">
                   {stepper.current.id === step.id &&
                     stepper.switch({
-                      signIn: () => <SignIn />,
                       checkYourCurrency: () => (
                         <CheckYourCurrency currency={currency} />
                       ),
                       selectYourCategories: () => <SelectYourCategories />,
+                      income: () => <IncomeForm />,
+                      fixedExpenses: () => <FixedExpensesForm />,
+                      createProfile: () => <CreateProfile />,
                     })}
                 </div>
               </div>
@@ -117,80 +133,6 @@ export function StepperOnboarding({currency}: StepperOnboardingProps) {
           <Button onClick={stepper.reset}>Reset</Button>
         )}
       </div>
-    </div>
-  )
-}
-
-const SignIn = () => {
-  return <ClerkSignIn />
-}
-
-const CheckYourCurrency = ({currency}: StepperOnboardingProps) => {
-  return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-2">
-        <label htmlFor="currency" className="text-sm font-medium text-start">
-          Currency
-        </label>
-        <Input id="currency" placeholder={currency} className="w-full" />
-      </div>
-    </div>
-  )
-}
-
-const categories = [
-  {
-    id: 'food',
-    name: 'Food',
-  },
-  {
-    id: 'transport',
-    name: 'Transport',
-  },
-  {
-    id: 'health',
-    name: 'Health',
-  },
-  {
-    id: 'education',
-    name: 'Education',
-  },
-]
-
-const SelectYourCategories = () => {
-  const [newCategory, setNewCategory] = useState('')
-  const [selectedCategories, setSelectedCategories] = useState(categories)
-
-  const handleSelectCategory = (category: string) => {
-    setSelectedCategories(prev => prev.filter(c => c.id !== category))
-  }
-
-  const handleAddCategory = ({category}: {category: string}) => {
-    setSelectedCategories(prev => [...prev, {id: category, name: category}])
-  }
-
-  return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center gap-2 flex-wrap">
-        {selectedCategories.map(category => (
-          <Button
-            size="sm"
-            key={category.id}
-            onClick={() => handleSelectCategory(category.id)}
-          >
-            <X />
-            {category.name}
-          </Button>
-        ))}
-      </div>
-      <Input
-        placeholder="Add Category"
-        value={newCategory}
-        onChange={e => setNewCategory(e.target.value)}
-      />
-      <Button onClick={() => handleAddCategory({category: newCategory})}>
-        Add Category
-      </Button>
     </div>
   )
 }

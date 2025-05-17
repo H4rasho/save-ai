@@ -9,3 +9,9 @@ export interface UserCreateProfile {
   incomeSources: Income[]
   fixedExpenses: string[]
 }
+
+export interface CreateExpense {
+  description: string
+  amount: string
+  category: string
+}

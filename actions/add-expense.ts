@@ -13,7 +13,7 @@ export async function addExpense(
     message: string
   },
   formData: FormData
-): Promise<void> {
+): Promise<{message: string}> {
   const user = await currentUser()
   const userEmail = user?.emailAddresses[0].emailAddress
   if (!userEmail) {
@@ -36,6 +36,8 @@ export async function addExpense(
     sql: 'INSERT INTO expenses (user_id, name, amount, category_id) VALUES (?, ?, ?, ?)',
     args: [userId, description, amount, category],
   })
+
+  return {message: 'Expense added successfully'}
 }
 
 export async function addExpensesFromFile(

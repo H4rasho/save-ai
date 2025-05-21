@@ -26,10 +26,9 @@ interface AddExpenseDialogProps {
 }
 
 export function AddExpenseDialog({categories}: AddExpenseDialogProps) {
-  const [, formAction, isPending] = useActionState<CreateExpense>(
-    addExpense,
-    null
-  )
+  const [, formAction, isPending] = useActionState(addExpense, {
+    message: '',
+  })
 
   return (
     <Dialog>

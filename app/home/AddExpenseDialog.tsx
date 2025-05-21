@@ -16,6 +16,7 @@ import {Label} from '@/components/ui/label'
 import {addExpense} from '@/actions/add-expense'
 import {useActionState} from 'react'
 import {CreateExpense} from '@/types/income'
+import {Plus} from 'lucide-react'
 
 interface AddExpenseDialogProps {
   categories: {
@@ -33,7 +34,10 @@ export function AddExpenseDialog({categories}: AddExpenseDialogProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="default">Agregar Gasto</Button>
+        <Button variant="default">
+          <Plus />
+          Agregar Gasto
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

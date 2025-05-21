@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/dialog'
 import {Label} from '@/components/ui/label'
 import {useActionState} from 'react'
+import {File, Upload} from 'lucide-react'
 
 export const AddExpenseFromFile = () => {
   const [form, formAction, isPending] = useActionState(
@@ -26,7 +27,10 @@ export const AddExpenseFromFile = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="default">Add Expense from File</Button>
+        <Button variant="default">
+          <Upload />
+          Add Expense from File
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

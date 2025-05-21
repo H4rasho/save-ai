@@ -24,6 +24,8 @@ const getExpenses = unstable_cache(
 
 import {HomeServerPagination} from './page-server-pagination'
 import {redirect} from 'next/navigation'
+import SummaryCard from './summary-card'
+import {BanknoteArrowDown, BanknoteArrowUp, Scale} from 'lucide-react'
 
 export default async function Home({
   searchParams,
@@ -32,6 +34,14 @@ export default async function Home({
 }) {
   const page = Math.max(1, parseInt(searchParams?.page || '1', 10))
   const pageSize = Math.max(1, parseInt(searchParams?.pageSize || '10', 10))
+
+  const totalExpenses = await client.execute({
+    sql: `SELECT SUM(amount) as total FROM expenses`,
+  })
+
+  const totalIncome = await client.execute({
+    sql: `SELECT SUM(amount) as total FROM income_sources`,
+  })
 
   // Fetch paginated expenses
   const expensesResult = await client.execute({
@@ -71,20 +81,41 @@ export default async function Home({
   }
 
   return (
-    <div className="flex flex-col max-w-6xl mx-auto py-10">
-      <div className="flex gap-4 mb- self-end">
-        <AddExpenseDialog categories={categoriesData} />
-        <AddExpenseFromFile />
-      </div>
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold">Movements</h2>
-      </div>
-      <HomeServerPagination
-        data={data}
-        page={page}
-        pageSize={pageSize}
-        totalCount={totalCount}
-      />
-    </div>
+    <main className="flex flex-col max-w-6xl mx-auto py-10 gap-8">
+      <h1 className="text-4xl font-bold mb-4">Home</h1>
+      <section>
+        <h2 className="text-2xl font-bold mb-4">Summary</h2>
+        <div className="flex gap-4">
+          <SummaryCard
+            amount={0}
+            title="Total Balance"
+            icon={<Scale size={48} strokeWidth={2} />}
+          ></SummaryCard>
+          <SummaryCard
+            amount={Number(totalIncome.rows[0]?.total || 0)}
+            title="Total Income"
+            icon={<BanknoteArrowUp size={48} strokeWidth={2} />}
+          ></SummaryCard>
+          <SummaryCard
+            amount={Number(totalExpenses.rows[0]?.total || 0)}
+            title="Total Expenses"
+            icon={<BanknoteArrowDown size={48} strokeWidth={2} />}
+          ></SummaryCard>
+        </div>
+      </section>
+      <section>
+        <div className="flex gap-4 self-end w-full justify-end">
+          <AddExpenseDialog categories={categoriesData} />
+          <AddExpenseFromFile />
+        </div>
+        <h2 className="text-2xl font-bold mb-4">Movements</h2>
+        <HomeServerPagination
+          data={data}
+          page={page}
+          pageSize={pageSize}
+          totalCount={totalCount}
+        />
+      </section>
+    </main>
   )
 }

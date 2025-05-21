@@ -36,10 +36,13 @@ export default async function Home() {
   }))
 
   return (
-    <div className="container mx-auto py-10">
-      <div className="mb-6">
+    <div className="flex flex-col max-w-6xl mx-auto py-10">
+      <div className="flex gap-4 mb-4 self-end">
         <AddExpenseDialog categories={categoriesData} />
         <AddExpenseFromFile />
+      </div>
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold">Movements</h2>
       </div>
       <DataTable columns={columns} data={data} />
     </div>

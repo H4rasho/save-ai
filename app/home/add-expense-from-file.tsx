@@ -1,7 +1,20 @@
 'use client'
 
 import {addExpensesFromFile} from '@/actions/add-expense'
-import {useActionState, useRef, useState} from 'react'
+import {Button} from '@/components/ui/button'
+import {Input} from '@/components/ui/input'
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from '@/components/ui/dialog'
+import {Label} from '@/components/ui/label'
+import {useActionState} from 'react'
 
 export const AddExpenseFromFile = () => {
   const [form, formAction, isPending] = useActionState(
@@ -11,31 +24,27 @@ export const AddExpenseFromFile = () => {
   )
 
   return (
-    <form
-      action={formAction}
-      style={{display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 400}}
-    >
-      <label style={{fontWeight: 500}}>Subir comprobante (PDF):</label>
-      <input
-        type="file"
-        name="file"
-        accept="application/pdf"
-        style={{padding: 8}}
-      />
-      <button
-        type="submit"
-        disabled={isPending}
-        style={{
-          padding: 10,
-          background: '#1976d2',
-          color: 'white',
-          border: 'none',
-          borderRadius: 4,
-          cursor: 'pointer',
-        }}
-      >
-        {isPending ? 'Cargando...' : 'Subir PDF'}
-      </button>
-    </form>
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="default">Add Expense from File</Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Add Expense from File</DialogTitle>
+          <DialogDescription>
+            Upload a PDF file to extract expenses.
+          </DialogDescription>
+        </DialogHeader>
+        <form action={formAction}>
+          <Label>Upload PDF:</Label>
+          <Input type="file" name="file" accept="application/pdf" />
+        </form>
+        <DialogFooter>
+          <Button type="submit" disabled={isPending}>
+            {isPending ? 'Cargando...' : 'Subir PDF'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }

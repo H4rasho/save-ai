@@ -1,3 +1,4 @@
+import {cn} from '@/lib/utils'
 import {Payment, columns} from './columns'
 import {DataTable} from './data-table'
 import {
@@ -15,6 +16,7 @@ interface HomeServerPaginationProps {
   page: number
   pageSize: number
   totalCount: number
+  className?: string
 }
 
 export function HomeServerPagination({
@@ -22,6 +24,7 @@ export function HomeServerPagination({
   page,
   pageSize,
   totalCount,
+  className,
 }: HomeServerPaginationProps) {
   const totalPages = Math.ceil(totalCount / pageSize)
 
@@ -62,7 +65,7 @@ export function HomeServerPagination({
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className={cn('flex flex-col gap-4', className)}>
       <DataTable columns={columns} data={data} />
       <Pagination>
         <PaginationContent>

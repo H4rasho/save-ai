@@ -12,7 +12,7 @@ export default function MovementsMobile({
   totalIncome,
 }: MovementsMobileProps) {
   return (
-    <section className="block sm:hidden  bg-card p-4 rounded-t-2xl">
+    <section className="block sm:hidden  bg-card py-4 px-4 rounded-t-2xl">
       <h2 className="font-bold mb-4">Last movements</h2>
       <div className="flex justify-between text-muted-foreground text-sm py-4">
         <div>

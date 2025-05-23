@@ -84,20 +84,20 @@ export default async function Home({
   }
 
   return (
-    <main className="flex flex-col max-w-6xl mx-auto py-10 gap-8">
-      <h1 className="text-4xl font-bold mb-4">Home</h1>
+    <main className="flex flex-col min-h-screen max-w-6xl mx-auto py-10">
       <section>
-        <h2 className="text-2xl font-bold mb-4">Summary</h2>
+        <h1 className="text-md font-bold mb-4 px-4">Hola Thomas, como va</h1>
+      </section>
+      <section>
         <div className="flex gap-4">
           <SummaryCard
             amount={0}
             title="Total Balance"
-            icon={<Scale size={48} strokeWidth={2} />}
+            icon={<Scale size={64} strokeWidth={2} />}
           ></SummaryCard>
         </div>
       </section>
-      <section>
-        <div className="flex gap-4 self-end w-full justify-end"></div>
+      <section className="mt-auto">
         <MovementsMobile
           data={data}
           totalExpenses={totalExpensesAmount}

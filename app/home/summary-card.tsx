@@ -19,7 +19,7 @@ export default function SummaryCard({ amount, title, icon }: Props) {
         <CardTitle>{title}</CardTitle>
         <CardDescription className="flex gap-2 items-center">
           {icon}
-          <p className="text-2xl font-bold">
+          <p className="text-3xl font-bold">
             {amount.toLocaleString("en-US", {
               style: "currency",
               currency: "USD",

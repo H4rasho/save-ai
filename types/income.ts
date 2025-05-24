@@ -19,11 +19,16 @@ export const CreateExpenseSchema = z.object({
   date: z.string(),
 });
 
-export type CreateExpense = z.infer<typeof CreateExpenseSchema>;
+export const CreateIncomeSchema = z.object({
+  name: z.string(),
+  amount: z.string(),
+});
 
 export const CategorySchema = z.object({
   id: z.number(),
   name: z.string(),
 });
 
+export type CreateExpense = z.infer<typeof CreateExpenseSchema>;
+export type CreateIncome = z.infer<typeof CreateIncomeSchema>;
 export type Category = z.infer<typeof CategorySchema>;

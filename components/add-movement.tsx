@@ -6,6 +6,7 @@ import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Category } from "@/types/income";
+import { AddMovementForm } from "./movements/add-movement-form";
 
 interface AddMovementProps {
   categories: Category[];
@@ -63,7 +64,7 @@ export function AddMovement({ categories }: AddMovementProps) {
             ref={modalRef}
             className="w-full max-w-md mx-auto rounded-t-2xl bg-card p-6 shadow-lg animate-slideUp relative"
             style={{
-              animation: "slideUp 0.3s cubic-bezier(0.4,0,0.2,1)"
+              animation: "slideUp 0.3s cubic-bezier(0.4,0,0.2,1)",
             }}
           >
             <button
@@ -74,43 +75,7 @@ export function AddMovement({ categories }: AddMovementProps) {
             >
               <X size={28} />
             </button>
-            <h3 className="text-lg font-bold mb-4 text-center">Agregar Gasto</h3>
-            <form className="space-y-4">
-              <div>
-                <Label htmlFor="description">Descripción</Label>
-                <Input id="description" name="description" required />
-              </div>
-              <div>
-                <Label htmlFor="amount">Monto</Label>
-                <Input id="amount" name="amount" type="number" required />
-              </div>
-              <div>
-                <Label htmlFor="category">Categoría</Label>
-                <select
-                  id="category"
-                  name="category"
-                  required
-                  className="w-full border rounded px-3 py-2"
-                  defaultValue=""
-                >
-                  <option value="" disabled>
-                    Selecciona una categoría
-                  </option>
-                  {categories?.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <Label htmlFor="date">Fecha</Label>
-                <Input id="date" name="date" type="date" required />
-              </div>
-              <Button type="submit" className="w-full">
-                Guardar
-              </Button>
-            </form>
+            <AddMovementForm categories={categories} />
           </div>
           <style jsx global>{`
             @keyframes slideUp {

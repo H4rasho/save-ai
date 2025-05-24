@@ -24,8 +24,9 @@ const getExpenses = unstable_cache(
 
 import { redirect } from "next/navigation";
 import SummaryCard from "./summary-card";
-import { BanknoteArrowDown, BanknoteArrowUp, Scale } from "lucide-react";
+import { Scale } from "lucide-react";
 import MovementsMobile from "./movements-mobile";
+import { ChatAgentCard } from "./ChatAgentCard";
 
 export default async function Home({
   searchParams,
@@ -86,18 +87,24 @@ export default async function Home({
   return (
     <main className="flex flex-col min-h-screen max-w-6xl mx-auto py-10">
       <section>
-        <h1 className="text-md font-bold mb-4 px-4">Hola Thomas, como va</h1>
+        <h1 className="text-md font-bold mb-4 px-4">
+          Hola Thomas, como va todo
+        </h1>
       </section>
-      <section>
+      <section className="flex-grow">
+        <h2 className="text-xl font-bold mb-4 px-4">Summary</h2>
         <div className="flex gap-4">
           <SummaryCard
             amount={0}
             title="Total Balance"
-            icon={<Scale size={64} strokeWidth={2} />}
+            icon={<Scale size={48} strokeWidth={2} />}
           ></SummaryCard>
         </div>
       </section>
-      <section className="mt-auto">
+      <section className="px-4 py-4">
+        <ChatAgentCard />
+      </section>
+      <section>
         <MovementsMobile
           data={data}
           totalExpenses={totalExpensesAmount}

@@ -1,32 +1,33 @@
 import { z } from "zod";
 
 export interface Income {
-  source: string;
-  amount: string;
+	id: string;
+	source: string;
+	amount: string;
 }
 
 export interface UserCreateProfile {
-  selectedCurrency: string;
-  categories: string[];
-  incomeSources: Income[];
-  fixedExpenses: string[];
+	selectedCurrency: string;
+	categories: string[];
+	incomeSources: Income[];
+	fixedExpenses: string[];
 }
 
 export const CreateExpenseSchema = z.object({
-  description: z.string(),
-  amount: z.number(),
-  category: z.string(),
-  date: z.string(),
+	description: z.string(),
+	amount: z.number(),
+	category: z.string(),
+	date: z.string(),
 });
 
 export const CreateIncomeSchema = z.object({
-  name: z.string(),
-  amount: z.string(),
+	name: z.string(),
+	amount: z.string(),
 });
 
 export const CategorySchema = z.object({
-  id: z.number(),
-  name: z.string(),
+	id: z.number(),
+	name: z.string(),
 });
 
 export type CreateExpense = z.infer<typeof CreateExpenseSchema>;

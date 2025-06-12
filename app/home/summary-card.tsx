@@ -1,3 +1,4 @@
+import { ChileFlag } from "@/components/icons/chile-flag";
 import {
 	Card,
 	CardDescription,
@@ -17,14 +18,20 @@ export default function SummaryCard({ amount, title, icon }: Props) {
 		<Card className="w-full rounded-none border-none">
 			<CardHeader>
 				<CardTitle>{title}</CardTitle>
-				<CardDescription className="flex gap-2 items-center">
+				<CardDescription className="flex gap-2 text-white justify-between items-center">
 					{icon}
-					<p className="text-3xl font-bold">
-						{amount.toLocaleString("en-US", {
-							style: "currency",
-							currency: "USD",
-						})}
-					</p>
+					<div className="flex gap-2">
+						<p className="text-3xl font-bold ">
+							{amount.toLocaleString("es-CL", {
+								style: "currency",
+								currency: "CLP",
+							})}
+						</p>
+						<small className="flex self-start items-center gap-1 text-s font-regular text-white">
+							CLP
+							<ChileFlag width={14} />
+						</small>
+					</div>
 				</CardDescription>
 			</CardHeader>
 		</Card>

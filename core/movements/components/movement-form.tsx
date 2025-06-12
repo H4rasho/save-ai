@@ -1,22 +1,27 @@
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { createMovmentAction } from "@/core/movements/actions/movments-actions";
 import { type Category, CreateExpense, CreateIncome } from "@/types/income";
-import { useState } from "react";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
+import { useActionState, useState } from "react";
+import { MovementType } from "../types/movement-type";
 
 interface AddMovementFormProps {
 	categories: Category[];
 }
 
-enum MovementType {
-	INCOME = "INCOME",
-	EXPENSE = "EXPENSE",
-}
+const initialState = {
+	amount: "",
+	category: "",
+	description: "",
+};
 
 export function AddMovementForm({ categories }: AddMovementFormProps) {
 	const [movementType, setMovementType] = useState<MovementType>(
 		MovementType.EXPENSE,
 	);
+	const [_, formAction, isPending] = useActionState(createMovmentAction, null);
 
 	return (
 		<section>
@@ -25,25 +30,20 @@ export function AddMovementForm({ categories }: AddMovementFormProps) {
 					? "Agregar Gasto"
 					: "Agregar Ingreso"}
 			</h3>
-			<div className="flex justify-center gap-2 mb-4">
-				<Button
-					type="button"
-					variant={
-						movementType === MovementType.EXPENSE ? "default" : "outline"
-					}
-					onClick={() => setMovementType(MovementType.EXPENSE)}
-				>
-					Gasto
-				</Button>
-				<Button
-					type="button"
-					variant={movementType === MovementType.INCOME ? "default" : "outline"}
-					onClick={() => setMovementType(MovementType.INCOME)}
-				>
-					Ingreso
-				</Button>
-			</div>
-			<form className="space-y-4">
+			<form className="space-y-4" action={formAction}>
+				{/* Tabs para seleccionar tipo de movimiento */}
+				<div className="flex justify-center mb-4">
+					<Tabs
+						value={movementType}
+						onValueChange={(val) => setMovementType(val as MovementType)}
+					>
+						<TabsList>
+							<TabsTrigger value={MovementType.EXPENSE}>Gasto</TabsTrigger>
+							<TabsTrigger value={MovementType.INCOME}>Ingreso</TabsTrigger>
+						</TabsList>
+					</Tabs>
+					<input type="hidden" name="movementType" value={movementType} />
+				</div>
 				{movementType === MovementType.EXPENSE ? (
 					<>
 						<div>

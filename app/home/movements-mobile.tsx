@@ -1,18 +1,19 @@
-import type { Payment } from "./columns";
+import type { MovementWithCategoryAndMovementType } from "@/core/movements/types/movement-type";
+import { cn } from "@/lib/utils";
 
 interface MovementsMobileProps {
-	data: Payment[];
+	data: MovementWithCategoryAndMovementType[];
 	totalExpenses: number;
 	totalIncome: number;
 }
 
-export default function MovementsMobile({
+export default function MovementsMgbile({
 	data,
 	totalExpenses,
 	totalIncome,
 }: MovementsMobileProps) {
 	return (
-		<section className="block sm:hidden  bg-card py-4 px-4 rounded-t-2xl">
+		<section className="block sm:hidden  bg-card py-12 px-4 rounded-t-2xl">
 			<h2 className="font-bold mb-4">Last movements</h2>
 			<div className="flex justify-between text-muted-foreground text-sm py-4">
 				<div>
@@ -34,17 +35,24 @@ export default function MovementsMobile({
 					</p>
 				</div>
 			</div>
-			{data.slice(0, 5).map((payment) => (
-				<div key={payment.id} className="flex justify-between py-2">
+			{data.slice(0, 5).map((movement) => (
+				<div key={movement.id} className="flex justify-between py-2">
 					<div className="max-w-1/2">
-						<p className="text-sm font-semibold">{payment.description}</p>
-						<p className="text-xs capitalize">{payment.category}</p>
+						<p className="text-sm font-semibold capitalize">{movement.name}</p>
+						<p className="text-xs capitalize">{movement.category_name}</p>
 					</div>
-					<p className="text-xs font-semibold self-end">
+					<p
+						className={cn(
+							"text-xs font-semibold self-end",
+							movement.movement_type_name === "expense"
+								? "text-red-500"
+								: "text-green-500",
+						)}
+					>
 						<span className="text-xs">
-							{payment.moveType === "expense" ? "-" : "+"}
+							{movement.movement_type_name === "expense" ? "-" : "+"}
 						</span>
-						{payment.amount.toLocaleString("es-CL", {
+						{movement.amount.toLocaleString("es-CL", {
 							style: "currency",
 							currency: "CLP",
 						})}

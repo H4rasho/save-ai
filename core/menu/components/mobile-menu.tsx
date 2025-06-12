@@ -1,13 +1,7 @@
+import { AddMovement } from "@/core/movements/components/create-movment";
 import { client } from "@/database/database";
-import {
-	ArrowDownCircle,
-	FileText,
-	History,
-	Plus,
-	Settings,
-} from "lucide-react";
+import { ArrowDownCircle, FileText, History, Settings } from "lucide-react";
 import Link from "next/link";
-import { AddMovement } from "./add-movement";
 
 export async function NavigationMenu() {
 	const categories = await client.execute({

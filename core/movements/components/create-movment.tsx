@@ -1,12 +1,9 @@
 "use client";
 
+import { AddMovementForm } from "@/core/movements/components/movement-form";
 import type { Category } from "@/types/income";
 import { Plus, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { AddMovementForm } from "./movements/add-movement-form";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
 
 interface AddMovementProps {
 	categories: Category[];

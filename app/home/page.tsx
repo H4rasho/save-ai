@@ -1,92 +1,19 @@
-import { client } from "@/database/database";
-import { unstable_cache } from "next/cache";
-import { AddExpenseDialog } from "./AddExpenseDialog";
-import { AddExpenseFromFile } from "./add-expense-from-file";
-
-const getExpenses = unstable_cache(
-	async () => {
-		const expenses = await client.execute({
-			sql: `SELECT expenses.id, expenses.name, expenses.amount, categories.name as category, expenses.created_at as date FROM expenses
-    INNER JOIN categories ON expenses.category_id = categories.id`,
-		});
-		return expenses.rows.map((expense) => ({
-			id: expense.id,
-			moveType: "expense",
-			category: expense.category as string,
-			description: expense.name as string,
-			date: expense.date as string,
-			amount: Number(expense.amount),
-		}));
-	},
-	["expenses"],
-	{ tags: ["expenses"] },
-);
-
+import {
+	getBalanceAction,
+	getTotalsByTypeAction,
+} from "@/core/movements/actions/movments-actions";
+import { getAllMovements } from "@/core/movements/repository/movements-repository";
 import { Scale } from "lucide-react";
-import { redirect } from "next/navigation";
 import { ChatAgentCard } from "./ChatAgentCard";
-import type { Payment } from "./columns";
 import MovementsMobile from "./movements-mobile";
 import SummaryCard from "./summary-card";
 
-export default async function Home({
-	searchParams,
-}: {
-	searchParams: { page?: string; pageSize?: string };
-}) {
-	const page = Math.max(1, Number.parseInt(searchParams?.page || "1", 10));
-	const pageSize = Math.max(
-		1,
-		Number.parseInt(searchParams?.pageSize || "10", 10),
-	);
-
-	const totalExpenses = await client.execute({
-		sql: "SELECT SUM(amount) as total FROM expenses",
-	});
-
-	const totalIncome = await client.execute({
-		sql: "SELECT SUM(amount) as total FROM income_sources",
-	});
-
-	// Fetch paginated expenses
-	const expensesResult = await client.execute({
-		sql: `SELECT expenses.id, expenses.name, expenses.amount, categories.name as category, expenses.created_at as date FROM expenses
-      INNER JOIN categories ON expenses.category_id = categories.id
-      ORDER BY expenses.created_at DESC
-      LIMIT ? OFFSET ?`,
-		args: [pageSize, (page - 1) * pageSize],
-	});
-	const data: Payment[] = expensesResult.rows.map((expense) => ({
-		id: Number(expense.id),
-		moveType: "expense",
-		category: expense.category as string,
-		description: expense.name as string,
-		date: expense.date as string,
-		amount: Number(expense.amount),
-	}));
-
-	const totalExpensesAmount = Number(totalExpenses.rows[0]?.total || 0);
-	const totalIncomeAmount = Number(totalIncome.rows[0]?.total || 0);
-
-	// Fetch total count
-	const totalCountResult = await client.execute({
-		sql: "SELECT COUNT(*) as count FROM expenses",
-	});
-	const totalCount = Number(totalCountResult.rows[0]?.count || 0);
-
-	const categories = await client.execute({
-		sql: "SELECT * FROM categories",
-	});
-	const categoriesData = categories.rows.map((category) => ({
-		id: Number(category.id),
-		name: category.name as string,
-	}));
-
-	// Redirect to first page if page is out of range
-	const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
-	if (page > totalPages && totalPages > 0) {
-		redirect(`?page=1&pageSize=${pageSize}`);
-	}
+export default async function Home() {
+	//TODO: GET userId
+	const userId = 1;
+	const movements = await getAllMovements(userId);
+	const { total_expenses, total_income } = await getTotalsByTypeAction(userId);
+	const balance = await getBalanceAction(userId);
 
 	return (
 		<main className="flex flex-col min-h-screen max-w-6xl mx-auto py-10">
@@ -99,7 +26,7 @@ export default async function Home({
 				<h2 className="text-xl font-bold mb-4 px-4">Summary</h2>
 				<div className="flex gap-4">
 					<SummaryCard
-						amount={0}
+						amount={balance}
 						title="Total Balance"
 						icon={<Scale size={48} strokeWidth={2} />}
 					/>
@@ -110,9 +37,9 @@ export default async function Home({
 			</section>
 			<section>
 				<MovementsMobile
-					data={data}
-					totalExpenses={totalExpensesAmount}
-					totalIncome={totalIncomeAmount}
+					data={movements}
+					totalExpenses={total_expenses}
+					totalIncome={total_income}
 				/>
 			</section>
 		</main>

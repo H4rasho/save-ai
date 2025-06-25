@@ -1,10 +1,47 @@
 import type {
 	CreateMovement,
+	CreateNotRecurringMovement,
 	Movement,
 	MovementWithCategoryAndMovementType,
 } from "@/core/movements/types/movement-type";
 import { client } from "@/database/database";
-import { unknown } from "zod";
+
+export async function createManyMovements(
+	movements: CreateNotRecurringMovement[],
+): Promise<void> {
+	if (movements.length === 0) {
+		return;
+	}
+	// Construir la consulta SQL para inserción múltiple
+	const placeholders = movements
+		.map(() => "(?, ?, ?, ?, ?, 0, NULL, NULL, NULL)")
+		.join(", ");
+
+	const values = movements.flatMap((movement) => [
+		movement.user_id,
+		movement.category_id ?? null,
+		movement.movement_type_id,
+		movement.name,
+		movement.amount,
+	]);
+
+	await client.execute({
+		sql: `
+      INSERT INTO movements (
+        user_id,
+        category_id,
+        movement_type_id,
+        name,
+        amount,
+        is_recurring,
+        recurrence_period,
+        recurrence_start,
+        recurrence_end
+      ) VALUES ${placeholders}
+		`,
+		args: values,
+	});
+}
 
 export async function createMovement(
 	movement: CreateMovement,
@@ -74,7 +111,6 @@ export async function getAllMovements(
     WHERE m.user_id = ?`,
 		args: [userId],
 	});
-	console.log({ rows: rows.rows });
 	return rows.rows as unknown as MovementWithCategoryAndMovementType[];
 }
 

@@ -4,10 +4,10 @@ export function ChileFlag(props: React.SVGProps<SVGSVGElement>) {
 			<title>Chile Flag</title>
 			<defs>
 				<clipPath id="a">
-					<path fill-opacity=".7" d="M0 0h682.7v512H0z" />
+					<path fillOpacity=".7" d="M0 0h682.7v512H0z" />
 				</clipPath>
 			</defs>
-			<g fill-rule="evenodd" clip-path="url(#a)" transform="scale(.9375)">
+			<g fillRule="evenodd" clipPath="url(#a)" transform="scale(.9375)">
 				<path fill="#fff" d="M256 0h512v256H256z" />
 				<path fill="#0039a6" d="M0 0h256v256H0z" />
 				<path

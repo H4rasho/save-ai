@@ -4,6 +4,7 @@ import {
 } from "@/core/movements/actions/movments-actions";
 import { getAllMovements } from "@/core/movements/repository/movements-repository";
 import { Scale } from "lucide-react";
+import { unstable_cache } from "next/cache";
 import { ChatAgentCard } from "./ChatAgentCard";
 import MovementsMobile from "./movements-mobile";
 import SummaryCard from "./summary-card";
@@ -11,7 +12,15 @@ import SummaryCard from "./summary-card";
 export default async function Home() {
 	//TODO: GET userId
 	const userId = 1;
-	const movements = await getAllMovements(userId);
+	const getAllMovementsCached = unstable_cache(
+		async (userId: number) => getAllMovements(userId),
+		["movements-list"],
+		{
+			tags: ["movements"],
+			revalidate: 60,
+		},
+	);
+	const movements = await getAllMovementsCached(userId);
 	const { total_expenses, total_income } = await getTotalsByTypeAction(userId);
 	const balance = await getBalanceAction(userId);
 

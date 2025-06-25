@@ -1,13 +1,12 @@
 import { AddMovement } from "@/core/movements/components/create-movment";
-import { client } from "@/database/database";
-import { ArrowDownCircle, FileText, History, Settings } from "lucide-react";
+import { ReadFileModalButton } from "@/core/movements/components/read-file-modal-button";
+import { getUserCategories } from "@/core/user/user-actions";
+import { ArrowDownCircle, History, Settings } from "lucide-react";
 import Link from "next/link";
 
 export async function NavigationMenu() {
-	const categories = await client.execute({
-		sql: "SELECT * FROM categories",
-	});
-	const categoriesData = categories.rows.map((category) => ({
+	const categories = await getUserCategories(1);
+	const categoriesData = categories.map((category) => ({
 		id: Number(category.id),
 		name: category.name as string,
 	}));
@@ -23,12 +22,7 @@ export async function NavigationMenu() {
 					</Link>
 				</li>
 				<li>
-					<Link href="/read-file" aria-label="Leer Archivo">
-						<FileText
-							size={28}
-							className="mx-auto text-zinc-500 hover:text-blue-500 transition-colors"
-						/>
-					</Link>
+					<ReadFileModalButton />
 				</li>
 				<li className="relative z-10">
 					<AddMovement categories={categoriesData} />

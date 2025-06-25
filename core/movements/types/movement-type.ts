@@ -16,7 +16,14 @@ export const MovementSchema = z.object({
 
 // Tipo TypeScript inferido
 export type Movement = z.infer<typeof MovementSchema>;
-
+export const CreateMovementSchema = MovementSchema.omit({
+	id: true,
+	is_recurring: true,
+	recurrence_period: true,
+	recurrence_start: true,
+	recurrence_end: true,
+});
+export type CreateNotRecurringMovement = z.infer<typeof CreateMovementSchema>;
 export type CreateMovement = Omit<Movement, "id">;
 
 export type MovementWithCategoryAndMovementType = Movement & {

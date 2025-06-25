@@ -1,13 +1,25 @@
 "use server";
 
+import { waitForDebugger } from "node:inspector/promises";
+import { addExpenses } from "@/actions/add-expense";
+import { getUserCategories } from "@/core/user/user-actions";
+import { CreateExpenseSchema } from "@/types/income";
+import { openai } from "@ai-sdk/openai";
+import { generateObject } from "ai";
+import { revalidateTag } from "next/cache";
+import { z } from "zod";
 import { MovementTypeDict } from "../const/movement-type-dict";
 import {
+	createManyMovements,
 	createMovement,
 	getAllMovements,
 	getBalance,
 	getTotalsByType,
 } from "../repository/movements-repository";
-import type { CreateMovement } from "../types/movement-type";
+import {
+	type CreateMovement,
+	CreateMovementSchema,
+} from "../types/movement-type";
 
 export async function createMovmentAction(
 	prevState: unknown,
@@ -64,4 +76,56 @@ export async function getBalanceAction(userId: number) {
 		console.error(error);
 		return 0;
 	}
+}
+
+export async function addMovmentsFromFileAction(
+	prevState: {
+		message: string;
+	},
+	formData: FormData,
+): Promise<void> {
+	const file = formData.get("file") as File;
+	if (!file) {
+		throw new Error("No file uploaded");
+	}
+	const userCategories = await getUserCategories(1);
+	const fileContent = await file.arrayBuffer();
+	const categoriesDescription = userCategories
+		.map((cat) => `${cat.name} (id: ${cat.id})`)
+		.join(", ");
+
+	const result = await generateObject({
+		model: openai("gpt-4o"),
+		schema: z.object({
+			expenses: CreateMovementSchema.array(),
+		}),
+		messages: [
+			{
+				role: "user",
+				content: [
+					{
+						type: "text",
+						text: `Extract the expenses and incomes from the PDF file and categorize them using ONLY the following user-defined categories:
+            ${categoriesDescription}.
+
+            When categorizing an expense, you must use the corresponding category ID in the category_id field.
+            If an expense doesn't clearly match any of these categories, use the category with the closest match.
+
+            The identifier of movement_type_id is a number that represents the type of movement (income or expense), which can be either 1 for income or 3 for expense.
+
+            Each expense should include all required fields from the schema, with the category_id being one of the IDs listed above.`,
+					},
+					{
+						type: "file",
+						data: fileContent,
+						mimeType: "application/pdf",
+						filename: file.name,
+					},
+				],
+			},
+		],
+	});
+	const movements = result.object.expenses;
+	await createManyMovements(movements);
+	revalidateTag("movement");
 }

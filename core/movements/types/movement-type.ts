@@ -29,6 +29,7 @@ export type CreateMovement = Omit<Movement, "id">;
 export type MovementWithCategoryAndMovementType = Movement & {
 	category_name: string;
 	movement_type_name: string;
+	created_at: string;
 };
 
 export enum MovementType {

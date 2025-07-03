@@ -12,6 +12,7 @@ import { MovementTypeDict } from "../const/movement-type-dict";
 import {
 	createManyMovements,
 	createMovement,
+	deleteMovement,
 	getAllMovements,
 	getBalance,
 	getTotalsByType,
@@ -19,6 +20,7 @@ import {
 import {
 	type CreateMovement,
 	CreateMovementSchema,
+	type MovementWithCategoryAndMovementType,
 } from "../types/movement-type";
 
 export async function createMovmentAction(
@@ -51,12 +53,25 @@ export async function createMovmentAction(
 	}
 }
 
-export async function getMovmentsAction(userId: number) {
+export async function getMovmentsAction(
+	userId: number,
+): Promise<MovementWithCategoryAndMovementType[]> {
 	try {
 		const movements = await getAllMovements(userId);
-		return movements;
+		if (!movements) {
+			throw new Error("No movements found");
+		}
+		return movements.map((movements) => ({
+			...movements,
+			created_at: new Date(movements.created_at).toLocaleDateString("es-ES", {
+				day: "2-digit",
+				month: "2-digit",
+				year: "numeric",
+			}),
+		}));
 	} catch (error) {
 		console.error(error);
+		throw error;
 	}
 }
 
@@ -128,4 +143,14 @@ export async function addMovmentsFromFileAction(
 	const movements = result.object.expenses;
 	await createManyMovements(movements);
 	revalidateTag("movement");
+}
+
+export async function deleteMovmentAction(id: number) {
+	try {
+		await deleteMovement(id);
+		revalidateTag("movement");
+	} catch (error) {
+		console.error(error);
+		throw error;
+	}
 }

@@ -105,7 +105,7 @@ export async function getAllMovements(
 	userId: number,
 ): Promise<MovementWithCategoryAndMovementType[]> {
 	const rows = await client.execute({
-		sql: `SELECT m.*, c.name as category_name, mt.name as movement_type_name  FROM movements as m
+		sql: `SELECT m.*, c.name as category_name, mt.name as movement_type_name, FORMAT(m.created_at, 'dd/MM/yyyy') as created_at  FROM movements as m
     LEFT JOIN categories c ON m.category_id = c.id
     JOIN movement_types mt ON m.movement_type_id = mt.id
     WHERE m.user_id = ?`,
@@ -152,4 +152,11 @@ export async function getBalance(userId: number): Promise<number> {
 	});
 	const result = rows.rows[0] as unknown as { balance: number };
 	return result.balance ?? 0;
+}
+
+export async function deleteMovement(id: number): Promise<void> {
+	await client.execute({
+		sql: `DELETE FROM movements WHERE id = ?`,
+		args: [id],
+	});
 }

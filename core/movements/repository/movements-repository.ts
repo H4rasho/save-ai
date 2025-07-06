@@ -1,46 +1,36 @@
+import { categories } from "@/core/categories/model/categories-model";
+import {
+	movement_types,
+	movements,
+} from "@/core/movements/model/movement-model";
 import type {
 	CreateMovement,
 	CreateNotRecurringMovement,
 	Movement,
 	MovementWithCategoryAndMovementType,
 } from "@/core/movements/types/movement-type";
-import { client } from "@/database/database";
+import { db } from "@/database/database";
+import { and, eq, sql } from "drizzle-orm";
 
 export async function createManyMovements(
-	movements: CreateNotRecurringMovement[],
+	movementsData: CreateNotRecurringMovement[],
 ): Promise<void> {
-	if (movements.length === 0) {
+	if (movementsData.length === 0) {
 		return;
 	}
-	// Construir la consulta SQL para inserción múltiple
-	const placeholders = movements
-		.map(() => "(?, ?, ?, ?, ?, 0, NULL, NULL, NULL)")
-		.join(", ");
-
-	const values = movements.flatMap((movement) => [
-		movement.user_id,
-		movement.category_id ?? null,
-		movement.movement_type_id,
-		movement.name,
-		movement.amount,
-	]);
-
-	await client.execute({
-		sql: `
-      INSERT INTO movements (
-        user_id,
-        category_id,
-        movement_type_id,
-        name,
-        amount,
-        is_recurring,
-        recurrence_period,
-        recurrence_start,
-        recurrence_end
-      ) VALUES ${placeholders}
-		`,
-		args: values,
-	});
+	await db.insert(movements).values(
+		movementsData.map((movement) => ({
+			user_id: movement.user_id,
+			category_id: movement.category_id ?? null,
+			movement_type_id: movement.movement_type_id,
+			name: movement.name,
+			amount: movement.amount,
+			is_recurring: 0,
+			recurrence_period: null,
+			recurrence_start: null,
+			recurrence_end: null,
+		})),
+	);
 }
 
 export async function createMovement(
@@ -58,105 +48,101 @@ export async function createMovement(
 		recurrence_end,
 	} = movement;
 
-	const result = await client.execute({
-		sql: `
-      INSERT INTO movements (
-        user_id,
-        category_id,
-        movement_type_id,
-        name,
-        amount,
-        is_recurring,
-        recurrence_period,
-        recurrence_start,
-        recurrence_end
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `,
-		args: [
+	const [inserted] = await db
+		.insert(movements)
+		.values({
 			user_id,
-			category_id ?? null,
+			category_id: category_id ?? null,
 			movement_type_id,
 			name,
 			amount,
-			is_recurring ? 1 : 0,
-			recurrence_period ?? null,
-			recurrence_start ?? null,
-			recurrence_end ?? null,
-		],
-	});
+			is_recurring: is_recurring ? 1 : 0,
+			recurrence_period: recurrence_period ?? null,
+			recurrence_start: recurrence_start ?? null,
+			recurrence_end: recurrence_end ?? null,
+		})
+		.returning();
 
-	// Recuperar el movimiento recién insertado
-	const id = result.lastInsertRowid as unknown as number;
-	const row = await client.execute({
-		sql: "SELECT * FROM movements WHERE id = ?",
-		args: [id],
-	});
-
-	if (!row.rows.length) {
+	if (!inserted) {
 		throw new Error("No se pudo recuperar el movimiento insertado");
 	}
-
-	// Adaptar los tipos según MovementSchema
-	const createdMovement = row.rows[0] as unknown as Movement;
-	return createdMovement;
+	return {
+		...inserted,
+		is_recurring: Boolean(inserted.is_recurring),
+	} as Movement;
 }
 
 export async function getAllMovements(
 	userId: number,
 ): Promise<MovementWithCategoryAndMovementType[]> {
-	const rows = await client.execute({
-		sql: `SELECT m.*, c.name as category_name, mt.name as movement_type_name, FORMAT(m.created_at, 'dd/MM/yyyy') as created_at  FROM movements as m
-    LEFT JOIN categories c ON m.category_id = c.id
-    JOIN movement_types mt ON m.movement_type_id = mt.id
-    WHERE m.user_id = ?`,
-		args: [userId],
-	});
-	return rows.rows as unknown as MovementWithCategoryAndMovementType[];
+	const rows = await db
+		.select({
+			id: movements.id,
+			user_id: movements.user_id,
+			category_id: movements.category_id,
+			movement_type_id: movements.movement_type_id,
+			name: movements.name,
+			amount: movements.amount,
+			is_recurring: movements.is_recurring,
+			recurrence_period: movements.recurrence_period,
+			recurrence_start: movements.recurrence_start,
+			recurrence_end: movements.recurrence_end,
+			created_at: movements.created_at,
+			category_name: categories.name,
+			movement_type_name: movement_types.name,
+		})
+		.from(movements)
+		.leftJoin(categories, eq(movements.category_id, categories.id))
+		.innerJoin(
+			movement_types,
+			eq(movements.movement_type_id, movement_types.id),
+		)
+		.where(eq(movements.user_id, userId));
+	return rows.map((row) => ({
+		...row,
+		is_recurring: Boolean(row.is_recurring),
+	})) as MovementWithCategoryAndMovementType[];
 }
 
 export async function getTotalsByType(
 	userId: number,
 ): Promise<{ total_expenses: number; total_income: number }> {
-	const rows = await client.execute({
-		sql: `
-      SELECT
-        SUM(CASE WHEN mt.name = 'expense' THEN m.amount ELSE 0 END) as total_expenses,
-        SUM(CASE WHEN mt.name = 'income' THEN m.amount ELSE 0 END) as total_income
-      FROM movements m
-      JOIN movement_types mt ON m.movement_type_id = mt.id
-      WHERE m.user_id = ?
-    `,
-		args: [userId],
-	});
-	const result = rows.rows[0] as unknown as {
+	const rows = await db
+		.select({
+			total_expenses: sql`SUM(CASE WHEN ${movement_types.name} = 'expense' THEN ${movements.amount} ELSE 0 END)`,
+			total_income: sql`SUM(CASE WHEN ${movement_types.name} = 'income' THEN ${movements.amount} ELSE 0 END)`,
+		})
+		.from(movements)
+		.innerJoin(
+			movement_types,
+			eq(movements.movement_type_id, movement_types.id),
+		)
+		.where(eq(movements.user_id, userId));
+	const result = rows[0] as unknown as {
 		total_expenses: number;
 		total_income: number;
 	};
 	return {
-		total_expenses: result.total_expenses ?? 0,
-		total_income: result.total_income ?? 0,
+		total_expenses: result?.total_expenses ?? 0,
+		total_income: result?.total_income ?? 0,
 	};
 }
 
 export async function getBalance(userId: number): Promise<number> {
-	const rows = await client.execute({
-		sql: `
-      SELECT
-        SUM(CASE WHEN mt.name = 'income' THEN m.amount ELSE 0 END) -
-        SUM(CASE WHEN mt.name = 'expense' THEN m.amount ELSE 0 END) as balance
-      FROM movements m
-      JOIN movement_types mt ON m.movement_type_id = mt.id
-      WHERE m.user_id = ?
-    `,
-		args: [userId],
-	});
-	const result = rows.rows[0] as unknown as { balance: number };
-	return result.balance ?? 0;
+	const rows = await db
+		.select({
+			balance: sql`SUM(CASE WHEN ${movement_types.name} = 'income' THEN ${movements.amount} ELSE 0 END) - SUM(CASE WHEN ${movement_types.name} = 'expense' THEN ${movements.amount} ELSE 0 END)`,
+		})
+		.from(movements)
+		.innerJoin(
+			movement_types,
+			eq(movements.movement_type_id, movement_types.id),
+		)
+		.where(eq(movements.user_id, userId));
+	const result = rows[0] as unknown as { balance: number };
+	return result?.balance ?? 0;
 }
 
 export async function deleteMovement(id: number): Promise<void> {
-	await client.execute({
-		sql: `DELETE FROM movements WHERE id = ?`,
-		args: [id],
-	});
+	await db.delete(movements).where(eq(movements.id, id));
 }

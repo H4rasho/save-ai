@@ -1,0 +1,23 @@
+import { users } from "@/core/user/model/user-model";
+import { integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
+
+export const movement_types = sqliteTable("movement_types", {
+	id: integer("id").primaryKey(),
+	name: text("name").notNull(),
+});
+
+export const movements = sqliteTable("movements", {
+	id: integer("id").primaryKey(),
+	user_id: integer("user_id").references(() => users.id),
+	category_id: integer("category_id"),
+	movement_type_id: integer("movement_type_id").references(
+		() => movement_types.id,
+	),
+	name: text("name"),
+	amount: real("amount"),
+	is_recurring: integer("is_recurring"),
+	recurrence_period: text("recurrence_period"),
+	recurrence_start: text("recurrence_start"),
+	recurrence_end: text("recurrence_end"),
+	created_at: text("created_at"),
+});

@@ -36,14 +36,6 @@ export default function FinancialMovementsList({
 		}).format(Math.abs(amount));
 	};
 
-	const formatDate = (dateString: string) => {
-		return new Date(dateString).toLocaleDateString("es-ES", {
-			day: "2-digit",
-			month: "2-digit",
-			year: "numeric",
-		});
-	};
-
 	const getAmountColor = (typeName: string) => {
 		return typeName.toUpperCase() === MovementType.INCOME
 			? "text-green-500 dark:text-green-400 font-semibold"
@@ -91,7 +83,7 @@ export default function FinancialMovementsList({
 									</div>
 
 									<div className="flex items-center gap-2 text-xs text-muted-foreground">
-										<span>{formatDate(movement.created_at)}</span>
+										<span>{movement.created_at}</span>
 										{movement.category_name && (
 											<>
 												<span>•</span>
@@ -107,7 +99,7 @@ export default function FinancialMovementsList({
 
 							<div className="flex items-center gap-3">
 								<div
-									className={`text-lg font-semibold ${getAmountColor(movement.movement_type_name)}`}
+									className={`text-md font-semibold ${getAmountColor(movement.movement_type_name)}`}
 								>
 									{movement.movement_type_name.toUpperCase() ===
 									MovementType.INCOME
@@ -185,7 +177,7 @@ export default function FinancialMovementsList({
 
 								<div className="flex items-center gap-2 flex-shrink-0">
 									<div
-										className={`text-lg font-semibold ${getAmountColor(movement.movement_type_name)}`}
+										className={`text-md font-semibold ${getAmountColor(movement.movement_type_name)}`}
 									>
 										{movement.movement_type_name.toUpperCase() ===
 										MovementType.INCOME
@@ -240,7 +232,7 @@ export default function FinancialMovementsList({
 
 							{/* Información adicional simplificada */}
 							<div className="flex items-center gap-2 text-xs text-muted-foreground">
-								<span>{formatDate(movement.created_at)}</span>
+								<span>{movement.created_at}</span>
 								{movement.category_name && (
 									<>
 										<span>•</span>

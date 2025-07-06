@@ -1,3 +1,6 @@
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 import { getMovmentsAction } from "@/core/movements/actions/movments-actions";
 import MovementsMobileList from "@/core/movements/components/mobile-list";
 

@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1751505464174,
-      "tag": "0000_thin_squirrel_girl",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1751506192453,
-      "tag": "0001_needy_psylocke",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1751506588427,
-      "tag": "0002_closed_thor_girl",
+      "when": 1751940377103,
+      "tag": "0000_sad_frank_castle",
       "breakpoints": true
     }
   ]

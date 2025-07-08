@@ -1,9 +1,54 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "c26de2ae-2016-4a74-9e06-5d2c4f2105a6",
+  "id": "15722664-80f2-447a-bc40-8ade4aaf9f9e",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
+    "categories": {
+      "name": "categories",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "clerk_id": {
+          "name": "clerk_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "categories_clerk_id_users_clerk_id_fk": {
+          "name": "categories_clerk_id_users_clerk_id_fk",
+          "tableFrom": "categories",
+          "tableTo": "users",
+          "columnsFrom": [
+            "clerk_id"
+          ],
+          "columnsTo": [
+            "clerk_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "movement_types": {
       "name": "movement_types",
       "columns": {
@@ -38,15 +83,15 @@
           "notNull": true,
           "autoincrement": false
         },
-        "user_id": {
-          "name": "user_id",
+        "category_id": {
+          "name": "category_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
-        "category_id": {
-          "name": "category_id",
+        "clerk_id": {
+          "name": "clerk_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": false,
@@ -73,6 +118,34 @@
           "notNull": false,
           "autoincrement": false
         },
+        "is_recurring": {
+          "name": "is_recurring",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "recurrence_period": {
+          "name": "recurrence_period",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "recurrence_start": {
+          "name": "recurrence_start",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "recurrence_end": {
+          "name": "recurrence_end",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "text",
@@ -83,28 +156,15 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "movements_user_id_users_id_fk": {
-          "name": "movements_user_id_users_id_fk",
+        "movements_clerk_id_users_clerk_id_fk": {
+          "name": "movements_clerk_id_users_clerk_id_fk",
           "tableFrom": "movements",
           "tableTo": "users",
           "columnsFrom": [
-            "user_id"
+            "clerk_id"
           ],
           "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "movements_category_id_categories_id_fk": {
-          "name": "movements_category_id_categories_id_fk",
-          "tableFrom": "movements",
-          "tableTo": "categories",
-          "columnsFrom": [
-            "category_id"
-          ],
-          "columnsTo": [
-            "id"
+            "clerk_id"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
@@ -157,6 +217,13 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "clerk_id": {
+          "name": "clerk_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {
@@ -164,6 +231,13 @@
           "name": "users_email_unique",
           "columns": [
             "email"
+          ],
+          "isUnique": true
+        },
+        "users_clerk_id_unique": {
+          "name": "users_clerk_id_unique",
+          "columns": [
+            "clerk_id"
           ],
           "isUnique": true
         }

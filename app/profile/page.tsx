@@ -3,6 +3,7 @@ import { currentUser } from "@clerk/nextjs/server";
 
 export default async function Profile() {
 	const user = await currentUser();
+	console.log(user);
 
 	if (!user) {
 		throw new Error("User not found");

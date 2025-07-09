@@ -2,7 +2,8 @@
 
 import { waitForDebugger } from "node:inspector/promises";
 import { addExpenses } from "@/actions/add-expense";
-import { getUserCategories } from "@/core/user/user-actions";
+import { getUserCategoriesAction } from "@/core/categories/actions/categories-actions";
+import { getUserId } from "@/core/user/user-actions";
 import { CreateExpenseSchema } from "@/types/income";
 import { openai } from "@ai-sdk/openai";
 import { generateObject } from "ai";
@@ -35,7 +36,7 @@ export async function createMovmentAction(
 
 	//TODO: create a recurring movement
 	const newMovement: CreateMovement = {
-		user_id: userId,
+		clerk_id: userId.toString(),
 		amount: Number(form.amount),
 		name: form.description as string,
 		is_recurring: false,
@@ -53,14 +54,13 @@ export async function createMovmentAction(
 	}
 }
 
-export async function getMovmentsAction(
-	userId: number,
-): Promise<MovementWithCategoryAndMovementType[]> {
+export async function getMovmentsAction(): Promise<
+	MovementWithCategoryAndMovementType[]
+> {
 	try {
+		const userId = await getUserId();
 		const movements = await getAllMovements(userId);
-		if (!movements) {
-			throw new Error("No movements found");
-		}
+		if (!movements.length) return [];
 		return movements.map((movements) => ({
 			...movements,
 			created_at: new Date(movements.created_at).toLocaleDateString("es-ES", {
@@ -103,7 +103,8 @@ export async function addMovmentsFromFileAction(
 	if (!file) {
 		throw new Error("No file uploaded");
 	}
-	const userCategories = await getUserCategories(1);
+	const userId = await getUserId();
+	const userCategories = await getUserCategoriesAction(userId);
 	const fileContent = await file.arrayBuffer();
 	const categoriesDescription = userCategories
 		.map((cat) => `${cat.name} (id: ${cat.id})`)
@@ -141,6 +142,7 @@ export async function addMovmentsFromFileAction(
 		],
 	});
 	const movements = result.object.expenses;
+	console.log(movements);
 	await createManyMovements(movements);
 	revalidateTag("movement");
 }

@@ -1,11 +1,11 @@
+import { getUserCategoriesAction } from "@/core/categories/actions/categories-actions";
 import { AddMovement } from "@/core/movements/components/create-movment";
 import { ReadFileModalButton } from "@/core/movements/components/read-file-modal-button";
-import { getUserCategories } from "@/core/user/user-actions";
 import { ArrowDownCircle, History, Settings } from "lucide-react";
 import Link from "next/link";
 
 export async function NavigationMenu() {
-	const categories = await getUserCategories(1);
+	const categories = await getUserCategoriesAction("1");
 	const categoriesData = categories.map((category) => ({
 		id: Number(category.id),
 		name: category.name as string,

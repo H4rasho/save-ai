@@ -1,59 +1,95 @@
 "use server";
 
-import { client } from "@/database/database";
+import { categories } from "@/core/categories/model/categories-model";
+import { MovementTypeDict } from "@/core/movements/const/movement-type-dict";
+import { movements } from "@/core/movements/model/movement-model";
+import { users } from "@/core/user/model/user-model";
+import { db } from "@/database/database";
 import type { UserCreateProfile } from "@/types/income";
 import { currentUser } from "@clerk/nextjs/server";
+import { and, eq } from "drizzle-orm";
 
 export const createUserProfile = async (profile: UserCreateProfile) => {
 	const user = await currentUser();
-
 	if (!user) {
 		throw new Error("User not found");
 	}
 	const email = user.emailAddresses[0].emailAddress;
 	const name = user.firstName;
+	const clerk_id = user.id;
 
-	await client.execute("BEGIN");
-	try {
-		const userResult = await client.execute({
-			sql: "INSERT INTO users (name, email, currency) VALUES (?, ?, ?)",
-			args: [name, email, profile.selectedCurrency],
-		});
+	// 1. Verificar si el usuario ya existe
+	const existingUser = await db
+		.select()
+		.from(users)
+		.where(eq(users.clerk_id, clerk_id));
+	if (existingUser.length > 0) {
+		throw new Error("User already exists");
+	}
 
-		if (!userResult.lastInsertRowid) {
-			throw new Error("User not created");
+	// 2. Insertar usuario
+	await db.insert(users).values({
+		name: name ?? email,
+		email,
+		currency: profile.selectedCurrency,
+		clerk_id,
+	});
+
+	// 3. Verificar si existen categorías duplicadas para este usuario
+	for (const categoryName of profile.categories) {
+		const existingCategory = await db
+			.select()
+			.from(categories)
+			.where(
+				and(
+					eq(categories.clerk_id, clerk_id),
+					eq(categories.name, categoryName),
+				),
+			);
+		if (existingCategory.length > 0) {
+			throw new Error(
+				`Category '${categoryName}' already exists for this user`,
+			);
 		}
+	}
 
-		const userId = userResult.lastInsertRowid;
-		await Promise.all(
-			profile.categories.map((category) =>
-				client.execute({
-					sql: "INSERT INTO categories (user_id, name) VALUES (?, ?)",
-					args: [userId, category],
-				}),
-			),
-		);
+	// 4. Insertar categorías
+	await db.insert(categories).values(
+		profile.categories.map((categoryName) => ({
+			name: categoryName,
+			clerk_id,
+		})),
+	);
 
-		await Promise.all(
-			profile.incomeSources.map((income) =>
-				client.execute({
-					sql: "INSERT INTO income_sources (user_id, name, amount) VALUES (?, ?, ?)",
-					args: [userId, income.source, income.amount],
-				}),
-			),
-		);
-
-		await Promise.all(
-			profile.fixedExpenses.map((expense) =>
-				client.execute({
-					sql: "INSERT INTO fixed_expenses (user_id, name, amount) VALUES (?, ?, ?)",
-					args: [userId, expense, 0],
-				}),
-			),
-		);
-		await client.execute("COMMIT");
-	} catch (error) {
-		await client.execute("ROLLBACK");
-		throw error;
+	// 5. Insertar movimientos (ingresos y gastos fijos)
+	const now = new Date().toISOString();
+	const incomeMovements = profile.incomeSources.map((income) => ({
+		clerk_id,
+		movement_type_id: MovementTypeDict.INCOME,
+		name: income.source,
+		amount: Number(income.amount),
+		is_recurring: 0,
+		recurrence_period: null,
+		recurrence_start: null,
+		recurrence_end: null,
+		created_at: now,
+		category_id: null,
+	}));
+	const fixedExpenseMovements = profile.fixedExpenses.map((expense) => ({
+		clerk_id,
+		movement_type_id: MovementTypeDict.FIXED_EXPENSE,
+		name: expense,
+		amount: 0,
+		is_recurring: 0,
+		recurrence_period: null,
+		recurrence_start: null,
+		recurrence_end: null,
+		created_at: now,
+		category_id: null,
+	}));
+	if (incomeMovements.length > 1 || fixedExpenseMovements.length > 1) {
+		await db
+			.insert(movements)
+			.values([...incomeMovements, ...fixedExpenseMovements]);
 	}
 };

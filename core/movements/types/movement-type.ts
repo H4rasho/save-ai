@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const MovementSchema = z.object({
 	id: z.number().int().positive(),
-	user_id: z.number().int().positive(),
+	clerk_id: z.string(),
 	category_id: z.number().int().positive().nullable(),
 	movement_type_id: z.number().int().positive(),
 	name: z.string(),
@@ -22,6 +22,7 @@ export const CreateMovementSchema = MovementSchema.omit({
 	recurrence_period: true,
 	recurrence_start: true,
 	recurrence_end: true,
+	clerk_id: true,
 });
 export type CreateNotRecurringMovement = z.infer<typeof CreateMovementSchema>;
 export type CreateMovement = Omit<Movement, "id">;

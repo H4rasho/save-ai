@@ -9,18 +9,21 @@ import type {
 	Movement,
 	MovementWithCategoryAndMovementType,
 } from "@/core/movements/types/movement-type";
+import { getUserId } from "@/core/user/user-actions";
 import { db } from "@/database/database";
 import { and, eq, sql } from "drizzle-orm";
 
 export async function createManyMovements(
 	movementsData: CreateNotRecurringMovement[],
 ): Promise<void> {
+	const clerkId = await getUserId();
+
 	if (movementsData.length === 0) {
 		return;
 	}
 	await db.insert(movements).values(
 		movementsData.map((movement) => ({
-			user_id: movement.user_id,
+			clerk_id: clerkId,
 			category_id: movement.category_id ?? null,
 			movement_type_id: movement.movement_type_id,
 			name: movement.name,
@@ -37,7 +40,7 @@ export async function createMovement(
 	movement: CreateMovement,
 ): Promise<Movement> {
 	const {
-		user_id,
+		clerk_id,
 		category_id,
 		movement_type_id,
 		name,
@@ -51,7 +54,7 @@ export async function createMovement(
 	const [inserted] = await db
 		.insert(movements)
 		.values({
-			user_id,
+			clerk_id,
 			category_id: category_id ?? null,
 			movement_type_id,
 			name,
@@ -73,12 +76,12 @@ export async function createMovement(
 }
 
 export async function getAllMovements(
-	userId: number,
+	userId: string,
 ): Promise<MovementWithCategoryAndMovementType[]> {
 	const rows = await db
 		.select({
 			id: movements.id,
-			user_id: movements.user_id,
+			clerk_id: movements.clerk_id,
 			category_id: movements.category_id,
 			movement_type_id: movements.movement_type_id,
 			name: movements.name,
@@ -97,7 +100,7 @@ export async function getAllMovements(
 			movement_types,
 			eq(movements.movement_type_id, movement_types.id),
 		)
-		.where(eq(movements.user_id, userId));
+		.where(eq(movements.clerk_id, userId.toString()));
 	return rows.map((row) => ({
 		...row,
 		is_recurring: Boolean(row.is_recurring),
@@ -117,7 +120,7 @@ export async function getTotalsByType(
 			movement_types,
 			eq(movements.movement_type_id, movement_types.id),
 		)
-		.where(eq(movements.user_id, userId));
+		.where(eq(movements.clerk_id, userId.toString()));
 	const result = rows[0] as unknown as {
 		total_expenses: number;
 		total_income: number;
@@ -138,7 +141,7 @@ export async function getBalance(userId: number): Promise<number> {
 			movement_types,
 			eq(movements.movement_type_id, movement_types.id),
 		)
-		.where(eq(movements.user_id, userId));
+		.where(eq(movements.clerk_id, userId.toString()));
 	const result = rows[0] as unknown as { balance: number };
 	return result?.balance ?? 0;
 }

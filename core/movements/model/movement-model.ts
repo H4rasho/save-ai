@@ -9,7 +9,7 @@ export const movement_types = sqliteTable("movement_types", {
 export const movements = sqliteTable("movements", {
 	id: integer("id").primaryKey(),
 	category_id: integer("category_id"),
-	clerk_id: integer("clerk_id").references(() => users.clerk_id),
+	clerk_id: text("clerk_id").references(() => users.clerk_id),
 	movement_type_id: integer("movement_type_id").references(
 		() => movement_types.id,
 	),

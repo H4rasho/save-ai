@@ -3,7 +3,7 @@
 import { waitForDebugger } from "node:inspector/promises";
 import { addExpenses } from "@/actions/add-expense";
 import { getUserCategoriesAction } from "@/core/categories/actions/categories-actions";
-import { getUserId } from "@/core/user/user-actions";
+import { getUserId } from "@/core/user/actions/user-actions";
 import { CreateExpenseSchema } from "@/types/income";
 import { openai } from "@ai-sdk/openai";
 import { generateObject } from "ai";

@@ -9,7 +9,7 @@ import type {
 	Movement,
 	MovementWithCategoryAndMovementType,
 } from "@/core/movements/types/movement-type";
-import { getUserId } from "@/core/user/user-actions";
+import { getUserId } from "@/core/user/actions/user-actions";
 import { db } from "@/database/database";
 import { and, eq, sql } from "drizzle-orm";
 

@@ -12,6 +12,8 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { getLocaleAndCurrency } from "@/core/user/lib/user-lib";
 import { Edit, MoreVertical, RefreshCw, Tag, Trash2 } from "lucide-react";
+import { startTransition, useActionState } from "react";
+import { deleteMovmentAction } from "../actions/movments-actions";
 import {
 	MovementType,
 	type MovementWithCategoryAndMovementType,
@@ -32,6 +34,11 @@ export default function FinancialMovementsList({
 	onConvertToFixed,
 	userCurrency,
 }: FinancialMovementsListProps) {
+	const [_, deleteAction, isPending] = useActionState(
+		deleteMovmentAction,
+		null,
+	);
+
 	const formatAmount = (amount: number) => {
 		const { locale, currency: resolvedCurrency } =
 			getLocaleAndCurrency(userCurrency);
@@ -146,7 +153,9 @@ export default function FinancialMovementsList({
 										<DropdownMenuSeparator />
 
 										<DropdownMenuItem
-											onClick={() => onDelete?.(movement.id)}
+											onClick={() => {
+												startTransition(() => deleteAction(movement.id));
+											}}
 											className="cursor-pointer text-red-600 dark:text-red-400 focus:text-red-600 dark:focus:text-red-400"
 										>
 											<Trash2 className="mr-2 h-4 w-4" />
@@ -224,7 +233,9 @@ export default function FinancialMovementsList({
 											<DropdownMenuSeparator />
 
 											<DropdownMenuItem
-												onClick={() => onDelete?.(movement.id)}
+												onClick={() =>
+													startTransition(() => deleteAction(movement.id))
+												}
 												className="cursor-pointer text-red-600 dark:text-red-400 focus:text-red-600 dark:focus:text-red-400 py-3"
 											>
 												<Trash2 className="mr-2 h-4 w-4" />

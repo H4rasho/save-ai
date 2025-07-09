@@ -147,7 +147,8 @@ export async function addMovmentsFromFileAction(
 	revalidateTag("movement");
 }
 
-export async function deleteMovmentAction(id: number) {
+export async function deleteMovmentAction(prevState: unknown, id: number) {
+	if (!id) throw new Error("No id provided");
 	try {
 		await deleteMovement(id);
 		revalidateTag("movement");

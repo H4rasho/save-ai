@@ -10,6 +10,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
+import { getLocaleAndCurrency } from "@/core/user/lib/user-lib";
 import { Edit, MoreVertical, RefreshCw, Tag, Trash2 } from "lucide-react";
 import {
 	MovementType,
@@ -21,6 +22,7 @@ interface FinancialMovementsListProps {
 	onEdit?: (movement: MovementWithCategoryAndMovementType) => void;
 	onDelete?: (movementId: number) => void;
 	onConvertToFixed?: (movementId: number) => void;
+	userCurrency: string; // <--- nuevo prop
 }
 
 export default function FinancialMovementsList({
@@ -28,11 +30,14 @@ export default function FinancialMovementsList({
 	onEdit,
 	onDelete,
 	onConvertToFixed,
+	userCurrency,
 }: FinancialMovementsListProps) {
 	const formatAmount = (amount: number) => {
-		return new Intl.NumberFormat("es-ES", {
+		const { locale, currency: resolvedCurrency } =
+			getLocaleAndCurrency(userCurrency);
+		return new Intl.NumberFormat(locale, {
 			style: "currency",
-			currency: "EUR",
+			currency: resolvedCurrency,
 		}).format(Math.abs(amount));
 	};
 

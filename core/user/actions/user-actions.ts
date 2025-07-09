@@ -23,3 +23,8 @@ export async function getUserId(): Promise<string> {
 	if (!clerkId) throw new Error("No clerk id found");
 	return clerkId;
 }
+
+export const getUserCurrency = async (): Promise<string> => {
+	const user = await getCurrentUser();
+	return user.currency;
+};

@@ -1,9 +1,9 @@
 "use server";
 
-import { categories } from "@/core/categories/model/categories-model";
-import { MovementTypeDict } from "@/core/movements/const/movement-type-dict";
-import { movements } from "@/core/movements/model/movement-model";
-import { users } from "@/core/user/model/user-model";
+import { categories } from "@/app/core/categories/model/categories-model";
+import { MovementTypeDict } from "@/app/core/movements/const/movement-type-dict";
+import { movements } from "@/app/core/movements/model/movement-model";
+import { users } from "@/app/core/user/model/user-model";
 import { db } from "@/database/database";
 import type { UserCreateProfile } from "@/types/income";
 import { currentUser } from "@clerk/nextjs/server";

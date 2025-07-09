@@ -2,8 +2,8 @@
 
 import { waitForDebugger } from "node:inspector/promises";
 import { addExpenses } from "@/actions/add-expense";
-import { getUserCategoriesAction } from "@/core/categories/actions/categories-actions";
-import { getUserId } from "@/core/user/actions/user-actions";
+import { getUserCategoriesAction } from "@/app/core/categories/actions/categories-actions";
+import { getUserId } from "@/app/core/user/actions/user-actions";
 import { CreateExpenseSchema } from "@/types/income";
 import { openai } from "@ai-sdk/openai";
 import { generateObject } from "ai";
@@ -54,11 +54,10 @@ export async function createMovmentAction(
 	}
 }
 
-export async function getMovmentsAction(): Promise<
-	MovementWithCategoryAndMovementType[]
-> {
+export async function getMovmentsAction(
+	userId: string,
+): Promise<MovementWithCategoryAndMovementType[]> {
 	try {
-		const userId = await getUserId();
 		const movements = await getAllMovements(userId);
 		if (!movements.length) return [];
 		return movements.map((movements) => ({
@@ -75,8 +74,9 @@ export async function getMovmentsAction(): Promise<
 	}
 }
 
-export async function getTotalsByTypeAction(userId: number) {
+export async function getTotalsByTypeAction() {
 	try {
+		const userId = await getUserId();
 		return await getTotalsByType(userId);
 	} catch (error) {
 		console.error(error);
@@ -84,8 +84,9 @@ export async function getTotalsByTypeAction(userId: number) {
 	}
 }
 
-export async function getBalanceAction(userId: number) {
+export async function getBalanceAction() {
 	try {
+		const userId = await getUserId();
 		return await getBalance(userId);
 	} catch (error) {
 		console.error(error);

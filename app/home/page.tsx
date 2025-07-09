@@ -1,19 +1,20 @@
 import {
 	getBalanceAction,
+	getMovmentsAction,
 	getTotalsByTypeAction,
-} from "@/core/movements/actions/movments-actions";
-import { getAllMovements } from "@/core/movements/repository/movements-repository";
+} from "@/app/core/movements/actions/movments-actions";
+import { getAllMovements } from "@/app/core/movements/repository/movements-repository";
 import { Scale } from "lucide-react";
 import { unstable_cache } from "next/cache";
+import { getUserId } from "../core/user/actions/user-actions";
 import { ChatAgentCard } from "./ChatAgentCard";
 import MovementsMobile from "./movements-mobile";
 import SummaryCard from "./summary-card";
 
 export default async function Home() {
-	//TODO: GET userId
-	const userId = 1;
+	const userId = await getUserId();
 	const getAllMovementsCached = unstable_cache(
-		async (userId: number) => getAllMovements(userId),
+		async (userId: string) => getMovmentsAction(userId),
 		["movements-list"],
 		{
 			tags: ["movements"],
@@ -21,8 +22,8 @@ export default async function Home() {
 		},
 	);
 	const movements = await getAllMovementsCached(userId);
-	const { total_expenses, total_income } = await getTotalsByTypeAction(userId);
-	const balance = await getBalanceAction(userId);
+	const { total_expenses, total_income } = await getTotalsByTypeAction();
+	const balance = await getBalanceAction();
 
 	return (
 		<main className="flex flex-col min-h-screen max-w-6xl mx-auto py-10">

@@ -1,6 +1,6 @@
-import { getUserCategoriesAction } from "@/core/categories/actions/categories-actions";
-import { AddMovement } from "@/core/movements/components/create-movment";
-import { ReadFileModalButton } from "@/core/movements/components/read-file-modal-button";
+import { getUserCategoriesAction } from "@/app/core/categories/actions/categories-actions";
+import { AddMovement } from "@/app/core/movements/components/create-movment";
+import { ReadFileModalButton } from "@/app/core/movements/components/read-file-modal-button";
 import { ArrowDownCircle, History, Settings } from "lucide-react";
 import Link from "next/link";
 

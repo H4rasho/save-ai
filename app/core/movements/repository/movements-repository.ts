@@ -1,15 +1,15 @@
-import { categories } from "@/core/categories/model/categories-model";
+import { categories } from "@/app/core/categories/model/categories-model";
 import {
 	movement_types,
 	movements,
-} from "@/core/movements/model/movement-model";
+} from "@/app/core/movements/model/movement-model";
 import type {
 	CreateMovement,
 	CreateNotRecurringMovement,
 	Movement,
 	MovementWithCategoryAndMovementType,
-} from "@/core/movements/types/movement-type";
-import { getUserId } from "@/core/user/actions/user-actions";
+} from "@/app/core/movements/types/movement-type";
+import { getUserId } from "@/app/core/user/actions/user-actions";
 import { db } from "@/database/database";
 import { and, eq, sql } from "drizzle-orm";
 
@@ -100,7 +100,7 @@ export async function getAllMovements(
 			movement_types,
 			eq(movements.movement_type_id, movement_types.id),
 		)
-		.where(eq(movements.clerk_id, userId.toString()));
+		.where(eq(movements.clerk_id, userId));
 	return rows.map((row) => ({
 		...row,
 		is_recurring: Boolean(row.is_recurring),
@@ -108,7 +108,7 @@ export async function getAllMovements(
 }
 
 export async function getTotalsByType(
-	userId: number,
+	userId: string,
 ): Promise<{ total_expenses: number; total_income: number }> {
 	const rows = await db
 		.select({
@@ -120,7 +120,7 @@ export async function getTotalsByType(
 			movement_types,
 			eq(movements.movement_type_id, movement_types.id),
 		)
-		.where(eq(movements.clerk_id, userId.toString()));
+		.where(eq(movements.clerk_id, userId));
 	const result = rows[0] as unknown as {
 		total_expenses: number;
 		total_income: number;
@@ -131,7 +131,7 @@ export async function getTotalsByType(
 	};
 }
 
-export async function getBalance(userId: number): Promise<number> {
+export async function getBalance(userId: string): Promise<number> {
 	const rows = await db
 		.select({
 			balance: sql`SUM(CASE WHEN ${movement_types.name} = 'income' THEN ${movements.amount} ELSE 0 END) - SUM(CASE WHEN ${movement_types.name} = 'expense' THEN ${movements.amount} ELSE 0 END)`,
@@ -141,7 +141,7 @@ export async function getBalance(userId: number): Promise<number> {
 			movement_types,
 			eq(movements.movement_type_id, movement_types.id),
 		)
-		.where(eq(movements.clerk_id, userId.toString()));
+		.where(eq(movements.clerk_id, userId));
 	const result = rows[0] as unknown as { balance: number };
 	return result?.balance ?? 0;
 }

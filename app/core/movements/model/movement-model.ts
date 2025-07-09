@@ -1,4 +1,4 @@
-import { users } from "@/core/user/model/user-model";
+import { users } from "@/app/core/user/model/user-model";
 import { integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const movement_types = sqliteTable("movement_types", {

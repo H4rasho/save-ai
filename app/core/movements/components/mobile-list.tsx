@@ -1,5 +1,6 @@
 "use client";
 
+import { getLocaleAndCurrency } from "@/app/core/user/lib/user-lib";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,7 +11,6 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
-import { getLocaleAndCurrency } from "@/core/user/lib/user-lib";
 import { Edit, MoreVertical, RefreshCw, Tag, Trash2 } from "lucide-react";
 import { startTransition, useActionState } from "react";
 import { deleteMovmentAction } from "../actions/movments-actions";

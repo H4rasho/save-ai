@@ -1,6 +1,6 @@
 "use client";
 
-import { AddMovementForm } from "@/core/movements/components/movement-form";
+import { AddMovementForm } from "@/app/core/movements/components/movement-form";
 import type { Category } from "@/types/income";
 import { Plus, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";

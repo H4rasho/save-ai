@@ -1,4 +1,4 @@
-import type { MovementWithCategoryAndMovementType } from "@/core/movements/types/movement-type";
+import type { MovementWithCategoryAndMovementType } from "@/app/core/movements/types/movement-type";
 import { cn } from "@/lib/utils";
 
 interface MovementsMobileProps {

@@ -1,5 +1,6 @@
-import { users } from "@/core/user/model/user-model";
-import type { User } from "@/core/user/types/user-types";
+"use server";
+import { users } from "@/app/core/user/model/user-model";
+import type { User } from "@/app/core/user/types/user-types";
 import { db } from "@/database/database";
 import { currentUser } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";

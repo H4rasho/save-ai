@@ -49,6 +49,8 @@ export async function createMovement(
 		recurrence_period,
 		recurrence_start,
 		recurrence_end,
+		transaction_date,
+		created_at,
 	} = movement;
 
 	const [inserted] = await db
@@ -63,6 +65,8 @@ export async function createMovement(
 			recurrence_period: recurrence_period ?? null,
 			recurrence_start: recurrence_start ?? null,
 			recurrence_end: recurrence_end ?? null,
+			transaction_date,
+			created_at,
 		})
 		.returning();
 

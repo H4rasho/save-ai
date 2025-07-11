@@ -29,8 +29,7 @@ export async function createMovmentAction(
 	formData: FormData,
 ) {
 	const form = Object.fromEntries(formData);
-	//TODO: get user id from clerk and database
-	const userId = 1;
+	const userId = await getUserId();
 	const movementType =
 		MovementTypeDict[form.movementType as keyof typeof MovementTypeDict];
 
@@ -46,7 +45,9 @@ export async function createMovmentAction(
 		recurrence_start: null,
 		recurrence_end: null,
 		recurrence_period: null,
+		transaction_date: form.date as string,
 	};
+
 	try {
 		const createdMovement = await createMovement(newMovement);
 	} catch (error) {
@@ -129,6 +130,7 @@ export async function addMovmentsFromFileAction(
             If an expense doesn't clearly match any of these categories, use the category with the closest match.
 
             The identifier of movement_type_id is a number that represents the type of movement (income or expense), which can be either 1 for income or 3 for expense.
+			Don't forget about the transaction_date field, it should be the date of the movement.
 
             Each expense should include all required fields from the schema, with the category_id being one of the IDs listed above.`,
 					},

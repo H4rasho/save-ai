@@ -19,5 +19,6 @@ export const movements = sqliteTable("movements", {
 	recurrence_period: text("recurrence_period"),
 	recurrence_start: text("recurrence_start"),
 	recurrence_end: text("recurrence_end"),
+	transaction_date: text("transaction_date"),
 	created_at: text("created_at"),
 });

@@ -69,7 +69,7 @@ export default function FinancialMovementsList({
 	}
 
 	return (
-		<div className="space-y-0">
+		<div className="space-y-0 pb-20">
 			{movements.map((movement, index) => (
 				<div key={movement.id}>
 					<div className="py-4 px-1 hover:bg-muted/50 transition-colors rounded-lg">

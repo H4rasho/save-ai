@@ -3,9 +3,11 @@ import { AddMovement } from "@/app/core/movements/components/create-movment";
 import { ReadFileModalButton } from "@/app/core/movements/components/read-file-modal-button";
 import { ArrowDownCircle, History, Settings } from "lucide-react";
 import Link from "next/link";
+import { getUserId } from "../../user/actions/user-actions";
 
 export async function NavigationMenu() {
-	const categories = await getUserCategoriesAction("1");
+	const userId = await getUserId();
+	const categories = await getUserCategoriesAction(userId);
 	const categoriesData = categories.map((category) => ({
 		id: Number(category.id),
 		name: category.name as string,

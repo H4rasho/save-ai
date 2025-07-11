@@ -12,6 +12,7 @@ export const MovementSchema = z.object({
 	recurrence_start: z.string().nullable(), // ISO date string
 	recurrence_end: z.string().nullable(), // ISO date string
 	created_at: z.string(), // ISO datetime string
+	transaction_date: z.string().nullable(), // ISO date string
 });
 
 // Tipo TypeScript inferido

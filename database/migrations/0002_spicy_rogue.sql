@@ -1,0 +1,1 @@
+ALTER TABLE `movements` ADD `transaction_date` text;

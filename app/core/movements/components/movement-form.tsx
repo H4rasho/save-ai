@@ -2,6 +2,7 @@ import { createMovmentAction } from "@/app/core/movements/actions/movments-actio
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SelectCombobox } from "@/components/ui/select-combobox";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { type Category, CreateExpense, CreateIncome } from "@/types/income";
 import { useActionState, useState } from "react";
@@ -21,6 +22,8 @@ export function AddMovementForm({ categories }: AddMovementFormProps) {
 	const [movementType, setMovementType] = useState<MovementType>(
 		MovementType.EXPENSE,
 	);
+	const [selectedCategory, setSelectedCategory] = useState<string>("");
+	const [open, setOpen] = useState(false);
 	const [_, formAction, isPending] = useActionState(createMovmentAction, null);
 
 	return (
@@ -55,23 +58,18 @@ export function AddMovementForm({ categories }: AddMovementFormProps) {
 							<Input id="amount" name="amount" type="number" required />
 						</div>
 						<div>
-							<Label htmlFor="category">Categoría</Label>
-							<select
-								id="category"
+							<SelectCombobox
+								label="Categoría"
+								options={categories.map((cat) => ({
+									label: cat.name,
+									value: String(cat.id),
+								}))}
+								value={selectedCategory}
+								onChange={setSelectedCategory}
+								placeholder="Selecciona una categoría"
 								name="category"
 								required
-								className="w-full border rounded px-3 py-2"
-								defaultValue=""
-							>
-								<option value="" disabled>
-									Selecciona una categoría
-								</option>
-								{categories?.map((cat) => (
-									<option key={cat.id} value={cat.id}>
-										{cat.name}
-									</option>
-								))}
-							</select>
+							/>
 						</div>
 						<div>
 							<Label htmlFor="date">Fecha</Label>

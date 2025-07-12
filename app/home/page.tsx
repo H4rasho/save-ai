@@ -3,7 +3,6 @@ import {
 	getMovmentsAction,
 	getTotalsByTypeAction,
 } from "@/app/core/movements/actions/movments-actions";
-import { getAllMovements } from "@/app/core/movements/repository/movements-repository";
 import { Scale } from "lucide-react";
 import { unstable_cache } from "next/cache";
 import { getUserId } from "../core/user/actions/user-actions";

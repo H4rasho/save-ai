@@ -63,7 +63,11 @@ export const SelectCombobox: React.FC<SelectComboboxProps> = ({
 						<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 					</Button>
 				</PopoverTrigger>
-				<PopoverContent className="w-full p-0">
+				<PopoverContent
+					className="w-full p-0"
+					onClick={(e) => e.stopPropagation()}
+					onMouseDown={(e) => e.stopPropagation()}
+				>
 					<Command>
 						<CommandInput placeholder={`Buscar...`} className="h-9" />
 						<CommandList>

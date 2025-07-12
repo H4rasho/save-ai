@@ -3,11 +3,12 @@ import {
 	movement_types,
 	movements,
 } from "@/app/core/movements/model/movement-model";
-import type {
-	CreateMovement,
-	CreateNotRecurringMovement,
-	Movement,
-	MovementWithCategoryAndMovementType,
+import {
+	type CreateMovement,
+	type CreateNotRecurringMovement,
+	type Movement,
+	MovementType,
+	type MovementWithCategoryAndMovementType,
 } from "@/app/core/movements/types/movement-type";
 import { getUserId } from "@/app/core/user/actions/user-actions";
 import { db } from "@/database/database";
@@ -116,8 +117,8 @@ export async function getTotalsByType(
 ): Promise<{ total_expenses: number; total_income: number }> {
 	const rows = await db
 		.select({
-			total_expenses: sql`SUM(CASE WHEN ${movement_types.name} = 'expense' THEN ${movements.amount} ELSE 0 END)`,
-			total_income: sql`SUM(CASE WHEN ${movement_types.name} = 'income' THEN ${movements.amount} ELSE 0 END)`,
+			total_expenses: sql`SUM(CASE WHEN ${movement_types.name} = ${MovementType.EXPENSE} THEN ${movements.amount} ELSE 0 END)`,
+			total_income: sql`SUM(CASE WHEN ${movement_types.name} = ${MovementType.INCOME} THEN ${movements.amount} ELSE 0 END)`,
 		})
 		.from(movements)
 		.innerJoin(
@@ -138,7 +139,7 @@ export async function getTotalsByType(
 export async function getBalance(userId: string): Promise<number> {
 	const rows = await db
 		.select({
-			balance: sql`SUM(CASE WHEN ${movement_types.name} = 'income' THEN ${movements.amount} ELSE 0 END) - SUM(CASE WHEN ${movement_types.name} = 'expense' THEN ${movements.amount} ELSE 0 END)`,
+			balance: sql`SUM(CASE WHEN ${movement_types.name} = ${MovementType.INCOME} THEN ${movements.amount} ELSE 0 END) - SUM(CASE WHEN ${movement_types.name} = ${MovementType.EXPENSE} THEN ${movements.amount} ELSE 0 END)`,
 		})
 		.from(movements)
 		.innerJoin(

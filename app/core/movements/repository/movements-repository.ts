@@ -83,6 +83,14 @@ export async function createMovement(
 export async function getAllMovements(
 	userId: string,
 ): Promise<MovementWithCategoryAndMovementType[]> {
+	const now = new Date();
+	const firstDay = new Date(now.getFullYear(), now.getMonth(), 1)
+		.toISOString()
+		.slice(0, 10);
+	const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+		.toISOString()
+		.slice(0, 10);
+
 	const rows = await db
 		.select({
 			id: movements.id,
@@ -98,6 +106,7 @@ export async function getAllMovements(
 			created_at: movements.created_at,
 			category_name: categories.name,
 			movement_type_name: movement_types.name,
+			transaction_date: movements.transaction_date,
 		})
 		.from(movements)
 		.leftJoin(categories, eq(movements.category_id, categories.id))
@@ -105,7 +114,13 @@ export async function getAllMovements(
 			movement_types,
 			eq(movements.movement_type_id, movement_types.id),
 		)
-		.where(eq(movements.clerk_id, userId));
+		.where(
+			and(
+				eq(movements.clerk_id, userId),
+				sql`${movements.transaction_date} >= ${firstDay}`,
+				sql`${movements.transaction_date} <= ${lastDay}`,
+			),
+		);
 	return rows.map((row) => ({
 		...row,
 		is_recurring: Boolean(row.is_recurring),
@@ -115,6 +130,14 @@ export async function getAllMovements(
 export async function getTotalsByType(
 	userId: string,
 ): Promise<{ total_expenses: number; total_income: number }> {
+	const now = new Date();
+	const firstDay = new Date(now.getFullYear(), now.getMonth(), 1)
+		.toISOString()
+		.slice(0, 10);
+	const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+		.toISOString()
+		.slice(0, 10);
+
 	const rows = await db
 		.select({
 			total_expenses: sql`SUM(CASE WHEN ${movement_types.name} = ${MovementType.EXPENSE} THEN ${movements.amount} ELSE 0 END)`,
@@ -125,7 +148,13 @@ export async function getTotalsByType(
 			movement_types,
 			eq(movements.movement_type_id, movement_types.id),
 		)
-		.where(eq(movements.clerk_id, userId));
+		.where(
+			and(
+				eq(movements.clerk_id, userId),
+				sql`${movements.transaction_date} >= ${firstDay}`,
+				sql`${movements.transaction_date} <= ${lastDay}`,
+			),
+		);
 	const result = rows[0] as unknown as {
 		total_expenses: number;
 		total_income: number;
@@ -137,6 +166,14 @@ export async function getTotalsByType(
 }
 
 export async function getBalance(userId: string): Promise<number> {
+	const now = new Date();
+	const firstDay = new Date(now.getFullYear(), now.getMonth(), 1)
+		.toISOString()
+		.slice(0, 10);
+	const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+		.toISOString()
+		.slice(0, 10);
+
 	const rows = await db
 		.select({
 			balance: sql`SUM(CASE WHEN ${movement_types.name} = ${MovementType.INCOME} THEN ${movements.amount} ELSE 0 END) - SUM(CASE WHEN ${movement_types.name} = ${MovementType.EXPENSE} THEN ${movements.amount} ELSE 0 END)`,
@@ -146,7 +183,13 @@ export async function getBalance(userId: string): Promise<number> {
 			movement_types,
 			eq(movements.movement_type_id, movement_types.id),
 		)
-		.where(eq(movements.clerk_id, userId));
+		.where(
+			and(
+				eq(movements.clerk_id, userId),
+				sql`${movements.transaction_date} >= ${firstDay}`,
+				sql`${movements.transaction_date} <= ${lastDay}`,
+			),
+		);
 	const result = rows[0] as unknown as { balance: number };
 	return result?.balance ?? 0;
 }

@@ -18,10 +18,9 @@ export async function getCurrentUser() {
 	return user;
 }
 
-export async function getUserId(): Promise<string> {
+export async function getUserId(): Promise<string | undefined> {
 	const userLogged = await currentUser();
 	const clerkId = userLogged?.id;
-	if (!clerkId) throw new Error("No clerk id found");
 	return clerkId;
 }
 

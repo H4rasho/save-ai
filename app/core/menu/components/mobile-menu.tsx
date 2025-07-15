@@ -7,6 +7,7 @@ import { getUserId } from "../../user/actions/user-actions";
 
 export async function NavigationMenu() {
 	const userId = await getUserId();
+	if (!userId) return null;
 	const categories = await getUserCategoriesAction(userId);
 	const categoriesData = categories.map((category) => ({
 		id: Number(category.id),

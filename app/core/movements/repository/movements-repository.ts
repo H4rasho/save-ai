@@ -33,6 +33,8 @@ export async function createManyMovements(
 			recurrence_period: null,
 			recurrence_start: null,
 			recurrence_end: null,
+			transaction_date: movement.transaction_date,
+			created_at: new Date().toISOString(),
 		})),
 	);
 }

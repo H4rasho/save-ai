@@ -1,0 +1,14 @@
+---
+alwaysApply: true
+---
+# Project Structure Guide
+
+- The main entry point for the app is in [app/page.tsx](mdc:app/page.tsx).
+- API routes are under [app/api/](mdc:app/api/).
+- Core business logic is organized in [app/core/](mdc:app/core/), with subfolders for features like categories, menu, movements, read-file, and user.
+- UI components are in [components/](mdc:components/), including reusable UI elements and icons.
+- Database configuration and migrations are in [database/](mdc:database/).
+- Global styles are in [app/globals.css](mdc:app/globals.css).
+- Configuration files are in [config/](mdc:config/), [schemas/](mdc:schemas/), and the project root.
+- The [lib/](mdc:lib/) directory contains utility functions and helpers.
+- Use shadcn components

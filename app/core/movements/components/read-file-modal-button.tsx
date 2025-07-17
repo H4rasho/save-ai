@@ -1,15 +1,35 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { FormControl, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { FileText, X } from "lucide-react";
-import { useActionState, useEffect, useRef, useState } from "react";
-import { addMovmentsFromFileAction } from "../actions/movments-actions";
+import { useEffect, useRef, useState } from "react";
+import { useActionState } from "react";
+import {
+	extractMovementsFromFileAction,
+	saveManyMovementsAction,
+} from "../actions/movments-actions";
+import type { CreateMovement } from "../types/movement-type";
+import { MovementsPreviewModal } from "./movements-preview-modal";
 
 export function ReadFileModalButton() {
 	const [isOpen, setIsOpen] = useState(false);
+	const [previewOpen, setPreviewOpen] = useState(false);
 	const modalRef = useRef<HTMLDivElement>(null);
+
+	// useActionState para manejar la extracción de movimientos
+	const [state, formAction, isPending] = useActionState(
+		extractMovementsFromFileAction,
+		{ movements: [], error: null },
+	);
+
+	// Abre el modal de preview cuando hay movimientos extraídos
+	useEffect(() => {
+		if (state.movements && state.movements.length > 0) {
+			setPreviewOpen(true);
+		}
+		console.log(state.movements);
+	}, [state.movements]);
 
 	// Cerrar al hacer click fuera del modal
 	useEffect(() => {
@@ -42,6 +62,13 @@ export function ReadFileModalButton() {
 		};
 	}, [isOpen]);
 
+	// Guardar movimientos editados
+	const handleConfirm = async (editedMovements: CreateMovement[]) => {
+		await saveManyMovementsAction(editedMovements);
+		setPreviewOpen(false);
+		setIsOpen(false);
+	};
+
 	return (
 		<>
 			<button
@@ -73,7 +100,16 @@ export function ReadFileModalButton() {
 							<X size={28} />
 						</button>
 						<h2 className="text-lg font-semibold mb-4">Subir archivo</h2>
-						<FileUploadForm />
+						<form action={formAction} className="space-y-4">
+							<label htmlFor="file">Selecciona un archivo</label>
+							<Input name="file" id="file" type="file" />
+							<Button type="submit" className="w-full" disabled={isPending}>
+								{isPending ? "Procesando..." : "Procesar archivo"}
+							</Button>
+							{state.error && (
+								<div className="text-red-500 text-sm">{state.error}</div>
+							)}
+						</form>
 					</div>
 					<style jsx global>{`
             @keyframes slideUp {
@@ -87,26 +123,12 @@ export function ReadFileModalButton() {
           `}</style>
 				</div>
 			)}
+			<MovementsPreviewModal
+				open={previewOpen}
+				movements={state.movements}
+				onCancel={() => setPreviewOpen(false)}
+				onConfirm={handleConfirm}
+			/>
 		</>
-	);
-}
-
-function FileUploadForm() {
-	const [_, formAction, isPending] = useActionState(
-		//@ts-ignore
-		addMovmentsFromFileAction,
-		{
-			message: "",
-		},
-	);
-
-	return (
-		<form action={formAction} className="space-y-4">
-			<label htmlFor="file">Selecciona un archivo</label>
-			<Input name="file" id="file" type="file" />
-			<Button type="submit" className="w-full">
-				{isPending ? "Loading..." : "Upload"}
-			</Button>
-		</form>
 	);
 }

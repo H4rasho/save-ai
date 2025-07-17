@@ -1,0 +1,9 @@
+---
+alwaysApply: true
+---
+# TypeScript Style Guide
+
+- Always use semicolons at the end of statements.
+- Use camelCase for variables and functions.
+- Use PascalCase for types, interfaces, and components.
+- Prefer explicit types for function parameters and return values.

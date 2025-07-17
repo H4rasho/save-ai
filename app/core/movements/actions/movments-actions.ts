@@ -23,7 +23,7 @@ import type {
 import { CreateMovementSchema } from "../types/movement-type";
 
 export async function createMovmentAction(
-	prevState: unknown,
+	_prevState: unknown,
 	formData: FormData,
 ) {
 	const form = Object.fromEntries(formData);
@@ -48,7 +48,7 @@ export async function createMovmentAction(
 	};
 
 	try {
-		const createdMovement = await createMovement(newMovement);
+		const _createdMovement = await createMovement(newMovement);
 	} catch (error) {
 		console.error(error);
 	}
@@ -97,7 +97,7 @@ export async function getBalanceAction() {
 }
 
 export async function addMovmentsFromFileAction(
-	prevState: {
+	_prevState: {
 		message: string;
 	},
 	formData: FormData,
@@ -152,7 +152,7 @@ export async function addMovmentsFromFileAction(
 }
 
 export async function extractMovementsFromFileAction(
-	prevState: { movements: CreateMovement[]; error: string | null },
+	_prevState: { movements: CreateMovement[]; error: string | null },
 	formData: FormData,
 ): Promise<{ movements: CreateMovement[]; error: string | null }> {
 	try {
@@ -229,7 +229,7 @@ export async function saveManyMovementsAction(
 	revalidateTag("movement");
 }
 
-export async function deleteMovmentAction(prevState: unknown, id: number) {
+export async function deleteMovmentAction(_prevState: unknown, id: number) {
 	if (!id) throw new Error("No id provided");
 	try {
 		await deleteMovement(id);

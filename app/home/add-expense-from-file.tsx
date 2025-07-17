@@ -4,7 +4,6 @@ import { addExpensesFromFile } from "@/actions/add-expense";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
-	DialogClose,
 	DialogContent,
 	DialogDescription,
 	DialogFooter,
@@ -14,11 +13,11 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { File, Upload } from "lucide-react";
+import { Upload } from "lucide-react";
 import { useActionState } from "react";
 
 export const AddExpenseFromFile = () => {
-	const [form, formAction, isPending] = useActionState(
+	const [_form, formAction, isPending] = useActionState(
 		//@ts-ignore
 		addExpensesFromFile,
 		null,

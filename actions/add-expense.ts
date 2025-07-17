@@ -9,7 +9,7 @@ import { revalidateTag } from "next/cache";
 import { z } from "zod";
 
 export async function addExpense(
-	prevState: {
+	_prevState: {
 		message: string;
 	},
 	formData: FormData,
@@ -41,7 +41,7 @@ export async function addExpense(
 }
 
 export async function addExpensesFromFile(
-	prevState: {
+	_prevState: {
 		message: string;
 	},
 	formData: FormData,

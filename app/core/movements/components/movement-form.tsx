@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SelectCombobox } from "@/components/ui/select-combobox";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { type Category, CreateExpense, CreateIncome } from "@/types/income";
+import type { Category } from "@/types/income";
 import { useActionState, useState } from "react";
 import { MovementType } from "../types/movement-type";
 
@@ -12,7 +12,7 @@ interface AddMovementFormProps {
 	categories: Category[];
 }
 
-const initialState = {
+const _initialState = {
 	amount: "",
 	category: "",
 	description: "",
@@ -23,8 +23,8 @@ export function AddMovementForm({ categories }: AddMovementFormProps) {
 		MovementType.EXPENSE,
 	);
 	const [selectedCategory, setSelectedCategory] = useState<string>("");
-	const [open, setOpen] = useState(false);
-	const [_, formAction, isPending] = useActionState(createMovmentAction, null);
+	const [_open, _setOpen] = useState(false);
+	const [_, formAction, _isPending] = useActionState(createMovmentAction, null);
 
 	return (
 		<section>

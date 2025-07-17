@@ -30,11 +30,10 @@ interface FinancialMovementsListProps {
 export default function FinancialMovementsList({
 	movements,
 	onEdit,
-	onDelete,
 	onConvertToFixed,
 	userCurrency,
 }: FinancialMovementsListProps) {
-	const [_, deleteAction, isPending] = useActionState(
+	const [_, deleteAction, _isPending] = useActionState(
 		deleteMovmentAction,
 		null,
 	);

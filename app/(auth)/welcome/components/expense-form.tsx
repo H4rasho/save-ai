@@ -17,10 +17,10 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { expenseSchema } from "@/schemas/expense-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
-import { expenseSchema } from "../../../schemas/expense-schema";
 
 export function ExpenseForm() {
 	// 1. Define your form.

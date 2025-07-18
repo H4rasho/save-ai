@@ -12,3 +12,4 @@ alwaysApply: true
 - Configuration files are in [config/](mdc:config/), [schemas/](mdc:schemas/), and the project root.
 - The [lib/](mdc:lib/) directory contains utility functions and helpers.
 - Use shadcn components
+- Use snake_case for files names

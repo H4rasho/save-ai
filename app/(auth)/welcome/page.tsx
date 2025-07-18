@@ -1,4 +1,4 @@
-import { StepperOnboarding } from "@/app/welcome/components/stepper-onboarding";
+import { StepperOnboarding } from "@/app/(auth)/welcome/components/stepper-onboarding";
 import { getCurrencyByCountry } from "@/lib/get-currency-by-country";
 
 export default async function Home() {

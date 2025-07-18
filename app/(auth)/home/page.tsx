@@ -3,9 +3,9 @@ import {
 	getMovmentsAction,
 	getTotalsByTypeAction,
 } from "@/app/core/movements/actions/movments-actions";
+import { getUserId } from "@/app/core/user/actions/user-actions";
 import { Scale } from "lucide-react";
 import { unstable_cache } from "next/cache";
-import { getUserId } from "../core/user/actions/user-actions";
 import { ChatAgentCard } from "./ChatAgentCard";
 import MovementsMobile from "./movements-mobile";
 import SummaryCard from "./summary-card";

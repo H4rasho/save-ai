@@ -1,6 +1,6 @@
 import type { MovementWithCategoryAndMovementType } from "@/app/core/movements/types/movement-type";
 import { cn } from "@/lib/utils";
-import { ArrowDownCircle, ArrowUpCircle, Calendar, Tag } from "lucide-react";
+import { ArrowDownCircle, ArrowUpCircle, Tag } from "lucide-react";
 
 interface MovementsMobileProps {
 	data: MovementWithCategoryAndMovementType[];
@@ -8,20 +8,13 @@ interface MovementsMobileProps {
 
 export default function MovementsMobile({ data }: MovementsMobileProps) {
 	return (
-		<section className="block sm:hidden bg-gradient-to-b from-card to-card/50 py-6 px-4 rounded-t-3xl border-t border-border/50 shadow-lg">
+		<section className="block sm:hidden">
 			{/* Lista de movimientos mejorada */}
 			<div className="space-y-3">
-				<div className="flex items-center gap-2 mb-4">
-					<Calendar className="w-4 h-4 text-muted-foreground" />
-					<h3 className="text-sm font-semibold text-foreground">
-						Últimos Movimientos
-					</h3>
-				</div>
-
 				{data.slice(0, 5).map((movement) => (
 					<div
 						key={movement.id}
-						className="bg-secondary-subtle dark:bg-secondary-dark p-4 rounded-xl border border-secondary/30 shadow-sm"
+						className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/30 p-4 rounded-xl border border-blue-200 dark:border-blue-700/40 shadow-sm"
 					>
 						<div className="flex justify-between items-start">
 							<div className="flex-1 min-w-0">
@@ -65,7 +58,6 @@ export default function MovementsMobile({ data }: MovementsMobileProps) {
 
 				{data.length === 0 && (
 					<div className="text-center py-8">
-						<Calendar className="w-12 h-12 text-muted-foreground mx-auto mb-3 opacity-50" />
 						<p className="text-muted-foreground text-sm">
 							No hay movimientos recientes
 						</p>

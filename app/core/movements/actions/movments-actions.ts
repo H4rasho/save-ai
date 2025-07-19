@@ -239,3 +239,99 @@ export async function deleteMovmentAction(_prevState: unknown, id: number) {
 		throw error;
 	}
 }
+
+export async function extractMovementsFromAudioAction(
+	_prevState: { movements: CreateMovement[]; error: string | null },
+	formData: FormData,
+): Promise<{ movements: CreateMovement[]; error: string | null }> {
+	try {
+		const audioFile = formData.get("audio") as File;
+		if (!audioFile) {
+			return { movements: [], error: "No audio file provided" };
+		}
+
+		const userId = await getUserId();
+		if (!userId) return { movements: [], error: "No user id" };
+
+		const userCategories = await getUserCategoriesAction(userId);
+		const categoriesDescription = userCategories
+			.map((cat) => `${cat.name} (id: ${cat.id})`)
+			.join(", ");
+
+		// Convert audio to text using OpenAI Whisper
+		const arrayBuffer = await audioFile.arrayBuffer();
+		const transcription = await fetch(
+			"https://api.openai.com/v1/audio/transcriptions",
+			{
+				method: "POST",
+				headers: {
+					Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+				},
+				body: (() => {
+					const formData = new FormData();
+					formData.append(
+						"file",
+						new Blob([arrayBuffer], { type: audioFile.type }),
+						"audio.webm",
+					);
+					formData.append("model", "whisper-1");
+					formData.append("language", "es");
+					return formData;
+				})(),
+			},
+		);
+
+		if (!transcription.ok) {
+			throw new Error("Error al transcribir el audio");
+		}
+
+		const transcriptionData = await transcription.json();
+		const text = transcriptionData.text;
+
+		// Process the transcribed text to extract movements
+		const result = await generateObject({
+			model: openai("gpt-4o"),
+			schema: z.object({
+				expenses: CreateMovementSchema.array(),
+			}),
+			messages: [
+				{
+					role: "user",
+					content: `Extract the expenses and incomes from the following transcribed audio text and categorize them using ONLY the following user-defined categories:
+            ${categoriesDescription}.
+
+            Audio transcription: "${text}"
+
+            When categorizing an expense, you must use the corresponding category ID in the category_id field.
+            If an expense doesn't clearly match any of these categories, use the category with the closest match.
+
+            The identifier of movement_type_id is a number that represents the type of movement (income or expense), which can be either 1 for income or 3 for expense.
+            
+            For the transaction_date field, if no specific date is mentioned in the audio, use today's date.
+            If a relative date is mentioned (like "yesterday", "last week"), calculate the appropriate date.
+
+            Each expense should include all required fields from the schema, with the category_id being one of the IDs listed above.`,
+				},
+			],
+		});
+
+		const movementsRaw = result.object.expenses;
+		const movements: CreateMovement[] = movementsRaw.map(
+			(mov: CreateNotRecurringMovement) => ({
+				clerk_id: String(userId),
+				is_recurring: false,
+				recurrence_period: null,
+				recurrence_start: null,
+				recurrence_end: null,
+				...mov,
+			}),
+		);
+
+		return { movements, error: null };
+	} catch (e: unknown) {
+		return {
+			movements: [],
+			error: e instanceof Error ? e.message : "Error al procesar el audio",
+		};
+	}
+}

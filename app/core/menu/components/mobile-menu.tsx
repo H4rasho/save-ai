@@ -1,4 +1,5 @@
 import { getUserCategoriesAction } from "@/app/core/categories/actions/categories-actions";
+import { CreateMovementFromAudio } from "@/app/core/movements/components/create-movement-from-audio";
 import { AddMovement } from "@/app/core/movements/components/create-movment";
 import { ReadFileModalButton } from "@/app/core/movements/components/read-file-modal-button";
 import { ArrowDownCircle, History, Settings } from "lucide-react";
@@ -26,6 +27,9 @@ export async function NavigationMenu() {
 				</li>
 				<li>
 					<ReadFileModalButton />
+				</li>
+				<li>
+					<CreateMovementFromAudio />
 				</li>
 				<li className="relative z-10">
 					<AddMovement categories={categoriesData} />

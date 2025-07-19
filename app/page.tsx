@@ -60,20 +60,24 @@ export default function LandingPage() {
 				</p>
 
 				<div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-					<Button
-						size="lg"
-						className="bg-gradient-to-r from-blue-500 to-sky-500 hover:from-blue-600 hover:to-sky-600 text-black font-semibold px-8"
-					>
-						Comenzar Gratis
-						<ArrowRight className="w-4 h-4 ml-2" />
-					</Button>
-					<Button
-						variant="outline"
-						size="lg"
-						className="border-gray-700 hover:bg-gray-800 bg-transparent"
-					>
-						Ver Demo
-					</Button>
+					<SignInButton mode="modal">
+						<Button
+							size="lg"
+							className="bg-gradient-to-r from-blue-500 to-sky-500 hover:from-blue-600 hover:to-sky-600 text-black font-semibold px-8"
+						>
+							Comenzar Gratis
+							<ArrowRight className="w-4 h-4 ml-2" />
+						</Button>
+					</SignInButton>
+					<SignInButton mode="modal">
+						<Button
+							variant="outline"
+							size="lg"
+							className="border-gray-700 hover:bg-gray-800 bg-transparent"
+						>
+							Ver Demo
+						</Button>
+					</SignInButton>
 				</div>
 			</section>
 
@@ -185,20 +189,24 @@ export default function LandingPage() {
 							mejor con ExpenseFlow
 						</p>
 						<div className="flex flex-col sm:flex-row gap-4 justify-center">
-							<Button
-								size="lg"
-								className="bg-gradient-to-r from-blue-500 to-sky-500 hover:from-blue-600 hover:to-sky-600 text-white font-semibold px-8 shadow-lg"
-							>
-								Crear Cuenta Gratis
-								<ArrowRight className="w-4 h-4 ml-2" />
-							</Button>
-							<Button
-								variant="outline"
-								size="lg"
-								className="border-gray-500 hover:bg-gray-800 bg-transparent text-gray-200 hover:text-white"
-							>
-								¿Ya tienes cuenta? Inicia Sesión
-							</Button>
+							<SignInButton mode="modal">
+								<Button
+									size="lg"
+									className="bg-gradient-to-r from-blue-500 to-sky-500 hover:from-blue-600 hover:to-sky-600 text-white font-semibold px-8 shadow-lg"
+								>
+									Crear Cuenta Gratis
+									<ArrowRight className="w-4 h-4 ml-2" />
+								</Button>
+							</SignInButton>
+							<SignInButton mode="modal">
+								<Button
+									variant="outline"
+									size="lg"
+									className="border-gray-500 hover:bg-gray-800 bg-transparent text-gray-200 hover:text-white"
+								>
+									¿Ya tienes cuenta? Inicia Sesión
+								</Button>
+							</SignInButton>
 						</div>
 						<p className="text-sm text-gray-400 mt-4">
 							Sin tarjeta de crédito • Gratis por 30 días • Cancela cuando

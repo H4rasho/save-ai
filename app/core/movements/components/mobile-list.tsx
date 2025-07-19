@@ -89,7 +89,7 @@ export default function FinancialMovementsList({
 			{movements.map((movement) => (
 				<div
 					key={movement.id}
-					className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/30 p-4 rounded-xl border border-blue-200 dark:border-blue-700/40 shadow-sm hover:shadow-md transition-all duration-200"
+					className="bg-card p-4 rounded-xl border border-border shadow-sm hover:shadow-md transition-all duration-200"
 				>
 					{/* Layout para Mobile y Desktop */}
 					<div className="flex justify-between items-start">
@@ -121,15 +121,15 @@ export default function FinancialMovementsList({
 							<div className="space-y-1">
 								{movement.category_name && (
 									<div className="flex items-center gap-1">
-										<Tag className="w-3 h-3 text-muted-foreground flex-shrink-0" />
-										<span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-md capitalize">
+										<Tag className="w-3 h-3 text-secondary-foreground/60 flex-shrink-0" />
+										<span className="text-xs text-secondary-foreground/80 bg-secondary-subtle px-2 py-1 rounded-md capitalize">
 											{movement.category_name}
 										</span>
 									</div>
 								)}
 								<div className="flex items-center gap-1">
-									<Calendar className="w-3 h-3 text-muted-foreground flex-shrink-0" />
-									<span className="text-xs text-muted-foreground">
+									<Calendar className="w-3 h-3 text-secondary-foreground/60 flex-shrink-0" />
+									<span className="text-xs text-secondary-foreground/70">
 										{movement.created_at}
 									</span>
 								</div>

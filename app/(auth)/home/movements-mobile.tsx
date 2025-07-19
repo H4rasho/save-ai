@@ -14,17 +14,17 @@ export default function MovementsMobile({ data }: MovementsMobileProps) {
 				{data.slice(0, 5).map((movement) => (
 					<div
 						key={movement.id}
-						className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/30 p-4 rounded-xl border border-blue-200 dark:border-blue-700/40 shadow-sm"
+						className="bg-card p-4 rounded-xl border border-border shadow-sm"
 					>
 						<div className="flex justify-between items-start">
 							<div className="flex-1 min-w-0">
 								<div className="flex items-center gap-2 mb-1">
-									<Tag className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+									<Tag className="w-3 h-3 text-secondary-foreground/60 flex-shrink-0" />
 									<p className="text-sm font-semibold text-foreground capitalize truncate">
 										{movement.name}
 									</p>
 								</div>
-								<p className="text-xs text-muted-foreground capitalize bg-muted px-2 py-1 rounded-md inline-block">
+								<p className="text-xs text-secondary-foreground/80 capitalize bg-secondary-subtle px-2 py-1 rounded-md inline-block">
 									{movement.category_name}
 								</p>
 							</div>

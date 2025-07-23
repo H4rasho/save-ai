@@ -15,7 +15,7 @@ export async function NavigationMenu() {
 	}));
 	return (
 		<nav className="fixed bottom-0 left-0 right-0 z-40 bg-card border-t border-border shadow-xl">
-			<div className="relative px-4 pt-8 pb-3">
+			<div className="relative px-4 pt-2 pb-3">
 				{/* Botón central flotante */}
 				<div className="absolute -top-8 left-1/2 -translate-x-1/2 z-20">
 					<AddMovement categories={categoriesData} />

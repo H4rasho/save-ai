@@ -10,6 +10,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 import {
 	ArrowDownCircle,
 	ArrowUpCircle,
@@ -34,6 +35,9 @@ interface FinancialMovementsListProps {
 	onDelete?: (movementId: number) => void;
 	onConvertToFixed?: (movementId: number) => void;
 	userCurrency: string;
+	showActions?: boolean; // Nueva prop para controlar las acciones
+	maxItems?: number; // Nueva prop para limitar elementos
+	className?: string; // Para personalizar estilos
 }
 
 export default function FinancialMovementsList({
@@ -41,6 +45,9 @@ export default function FinancialMovementsList({
 	onEdit,
 	onConvertToFixed,
 	userCurrency,
+	showActions = true, // Por defecto muestra las acciones
+	maxItems, // Sin límite por defecto
+	className,
 }: FinancialMovementsListProps) {
 	const [_, deleteAction, _isPending] = useActionState(
 		deleteMovmentAction,
@@ -70,6 +77,11 @@ export default function FinancialMovementsList({
 		return typeName.toUpperCase() === MovementType.INCOME;
 	};
 
+	// Aplicar límite de elementos si se especifica
+	const displayedMovements = maxItems
+		? movements.slice(0, maxItems)
+		: movements;
+
 	if (movements.length === 0) {
 		return (
 			<div className="text-center py-16">
@@ -78,20 +90,22 @@ export default function FinancialMovementsList({
 					No hay movimientos
 				</h3>
 				<p className="text-muted-foreground text-sm">
-					Agrega tu primer movimiento para comenzar
+					{maxItems
+						? "No hay movimientos recientes"
+						: "Agrega tu primer movimiento para comenzar"}
 				</p>
 			</div>
 		);
 	}
 
 	return (
-		<div className="space-y-3">
-			{movements.map((movement) => (
+		<div className={cn("space-y-3", className)}>
+			{displayedMovements.map((movement) => (
 				<div
 					key={movement.id}
 					className="bg-card p-4 rounded-xl border border-border shadow-sm hover:shadow-md transition-all duration-200"
 				>
-					{/* Layout para Mobile y Desktop */}
+					{/* Layout unificado */}
 					<div className="flex justify-between items-start">
 						<div className="flex-1 min-w-0 pr-3">
 							{/* Header con nombre y badges */}
@@ -118,25 +132,25 @@ export default function FinancialMovementsList({
 							</div>
 
 							{/* Información adicional */}
-							<div className="space-y-1">
+							<div className="flex items-center gap-3 text-xs">
+								<div className="flex items-center gap-1">
+									<Calendar className="w-3 h-3 text-secondary-foreground/60 flex-shrink-0" />
+									<span className="text-secondary-foreground/70">
+										{movement.created_at}
+									</span>
+								</div>
 								{movement.category_name && (
 									<div className="flex items-center gap-1">
 										<Tag className="w-3 h-3 text-secondary-foreground/60 flex-shrink-0" />
-										<span className="text-xs text-secondary-foreground/80 bg-secondary-subtle px-2 py-1 rounded-md capitalize">
+										<span className="text-secondary-foreground/80 bg-secondary-subtle px-2 py-1 rounded-md capitalize">
 											{movement.category_name}
 										</span>
 									</div>
 								)}
-								<div className="flex items-center gap-1">
-									<Calendar className="w-3 h-3 text-secondary-foreground/60 flex-shrink-0" />
-									<span className="text-xs text-secondary-foreground/70">
-										{movement.created_at}
-									</span>
-								</div>
 							</div>
 						</div>
 
-						{/* Monto y menú */}
+						{/* Monto y menú condicional */}
 						<div className="flex items-center gap-2 flex-shrink-0">
 							<div
 								className={`text-sm font-bold ${getAmountColor(movement.movement_type_name)}`}
@@ -147,49 +161,52 @@ export default function FinancialMovementsList({
 								{formatAmount(movement.amount)}
 							</div>
 
-							<DropdownMenu>
-								<DropdownMenuTrigger asChild>
-									<Button
-										variant="ghost"
-										size="sm"
-										className="h-8 w-8 p-0 flex-shrink-0 hover:bg-muted rounded-lg"
-									>
-										<MoreVertical className="h-4 w-4" />
-										<span className="sr-only">Abrir menú</span>
-									</Button>
-								</DropdownMenuTrigger>
-								<DropdownMenuContent align="end" className="w-48">
-									<DropdownMenuItem
-										onClick={() => onEdit?.(movement)}
-										className="cursor-pointer py-3"
-									>
-										<Edit className="mr-2 h-4 w-4" />
-										Editar
-									</DropdownMenuItem>
-
-									{!isFixedExpense(movement.movement_type_name) && (
+							{/* Menú de acciones - solo si showActions es true */}
+							{showActions && (
+								<DropdownMenu>
+									<DropdownMenuTrigger asChild>
+										<Button
+											variant="ghost"
+											size="sm"
+											className="h-8 w-8 p-0 flex-shrink-0 hover:bg-muted rounded-lg"
+										>
+											<MoreVertical className="h-4 w-4" />
+											<span className="sr-only">Abrir menú</span>
+										</Button>
+									</DropdownMenuTrigger>
+									<DropdownMenuContent align="end" className="w-48">
 										<DropdownMenuItem
-											onClick={() => onConvertToFixed?.(movement.id)}
+											onClick={() => onEdit?.(movement)}
 											className="cursor-pointer py-3"
 										>
-											<RefreshCw className="mr-2 h-4 w-4" />
-											Convertir a gasto fijo
+											<Edit className="mr-2 h-4 w-4" />
+											Editar
 										</DropdownMenuItem>
-									)}
 
-									<DropdownMenuSeparator />
+										{!isFixedExpense(movement.movement_type_name) && (
+											<DropdownMenuItem
+												onClick={() => onConvertToFixed?.(movement.id)}
+												className="cursor-pointer py-3"
+											>
+												<RefreshCw className="mr-2 h-4 w-4" />
+												Convertir a gasto fijo
+											</DropdownMenuItem>
+										)}
 
-									<DropdownMenuItem
-										onClick={() =>
-											startTransition(() => deleteAction(movement.id))
-										}
-										className="cursor-pointer text-red-600 dark:text-red-400 focus:text-red-600 dark:focus:text-red-400 py-3"
-									>
-										<Trash2 className="mr-2 h-4 w-4" />
-										Eliminar
-									</DropdownMenuItem>
-								</DropdownMenuContent>
-							</DropdownMenu>
+										<DropdownMenuSeparator />
+
+										<DropdownMenuItem
+											onClick={() =>
+												startTransition(() => deleteAction(movement.id))
+											}
+											className="cursor-pointer text-red-600 dark:text-red-400 focus:text-red-600 dark:focus:text-red-400 py-3"
+										>
+											<Trash2 className="mr-2 h-4 w-4" />
+											Eliminar
+										</DropdownMenuItem>
+									</DropdownMenuContent>
+								</DropdownMenu>
+							)}
 						</div>
 					</div>
 				</div>

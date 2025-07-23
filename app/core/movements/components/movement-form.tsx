@@ -28,11 +28,6 @@ export function AddMovementForm({ categories }: AddMovementFormProps) {
 
 	return (
 		<section>
-			<h3 className="text-lg font-bold mb-4 text-center">
-				{movementType === MovementType.EXPENSE
-					? "Agregar Gasto"
-					: "Agregar Ingreso"}
-			</h3>
 			<form className="space-y-4" action={formAction}>
 				{/* Tabs para seleccionar tipo de movimiento */}
 				<div className="flex justify-center mb-4">

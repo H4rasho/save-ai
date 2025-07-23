@@ -3,10 +3,13 @@ import {
 	getMovmentsAction,
 	getTotalsByTypeAction,
 } from "@/app/core/movements/actions/movments-actions";
-import { getUserId } from "@/app/core/user/actions/user-actions";
+import FinancialMovementsList from "@/app/core/movements/components/mobile-list";
+import {
+	getUserCurrency,
+	getUserId,
+} from "@/app/core/user/actions/user-actions";
 import { Scale, TrendingDown, TrendingUp, Wallet } from "lucide-react";
 import { unstable_cache } from "next/cache";
-import MovementsMobile from "./movements-mobile";
 
 export default async function Home() {
 	const userId = await getUserId();
@@ -21,6 +24,7 @@ export default async function Home() {
 	const movements = await getAllMovementsCached(userId);
 	const { total_expenses, total_income } = await getTotalsByTypeAction();
 	const balance = await getBalanceAction();
+	const userCurrency = await getUserCurrency();
 
 	return (
 		<main className="flex flex-col min-h-screen max-w-6xl mx-auto py-10">
@@ -112,7 +116,14 @@ export default async function Home() {
 						Gestiona tus transacciones
 					</p>
 				</div>
-				<MovementsMobile data={movements} />
+				<div className="block sm:hidden">
+					<FinancialMovementsList
+						movements={movements}
+						userCurrency={userCurrency}
+						showActions={false}
+						maxItems={5}
+					/>
+				</div>
 			</section>
 		</main>
 	);

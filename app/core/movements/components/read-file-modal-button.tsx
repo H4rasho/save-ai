@@ -78,15 +78,15 @@ export function ReadFileModalButton() {
 				className="flex flex-col items-center justify-center"
 			>
 				<FileText
-					size={28}
-					className="mx-auto text-zinc-500 hover:text-blue-500 transition-colors"
+					size={20}
+					className="text-foreground/70 hover:text-primary transition-colors"
 				/>
 			</button>
 			{isOpen && (
-				<div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40">
+				<div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/40">
 					<div
 						ref={modalRef}
-						className="w-full max-w-md mx-auto rounded-t-2xl bg-card p-6 shadow-lg animate-slideUp relative"
+						className="w-[calc(100%-2rem)] max-w-md mx-auto rounded-t-2xl bg-card p-6 shadow-lg animate-slideUp relative"
 						style={{
 							animation: "slideUp 0.3s cubic-bezier(0.4,0,0.2,1)",
 						}}

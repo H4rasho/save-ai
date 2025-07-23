@@ -1,10 +1,9 @@
 import { getUserCategoriesAction } from "@/app/core/categories/actions/categories-actions";
-import { CreateMovementFromAudio } from "@/app/core/movements/components/create-movement-from-audio";
 import { AddMovement } from "@/app/core/movements/components/create-movment";
-import { ReadFileModalButton } from "@/app/core/movements/components/read-file-modal-button";
-import { History, Settings } from "lucide-react";
+import { History, Home, Settings } from "lucide-react";
 import Link from "next/link";
 import { getUserId } from "../../user/actions/user-actions";
+import { InputOptionsButton } from "./input-options-button";
 
 export async function NavigationMenu() {
 	const userId = await getUserId();
@@ -15,34 +14,60 @@ export async function NavigationMenu() {
 		name: category.name as string,
 	}));
 	return (
-		<nav className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 flex justify-around items-center h-16 shadow-lg">
-			<ul className="flex w-full justify-around items-center relative">
-				<li>
-					<ReadFileModalButton />
-				</li>
-				<li>
-					<CreateMovementFromAudio />
-				</li>
-				<li className="relative z-10">
+		<nav className="fixed bottom-0 left-0 right-0 z-40 bg-card border-t border-border shadow-xl">
+			<div className="relative px-4 pt-8 pb-3">
+				{/* Botón central flotante */}
+				<div className="absolute -top-8 left-1/2 -translate-x-1/2 z-20">
 					<AddMovement categories={categoriesData} />
-				</li>
-				<li>
-					<Link href="/movements" aria-label="Historial">
+				</div>
+
+				{/* Grid de 4 botones */}
+				<div className="grid grid-cols-4 gap-2">
+					<Link
+						href="/home"
+						className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-secondary/50 transition-all duration-200 group"
+						aria-label="Inicio"
+					>
+						<Home
+							size={20}
+							className="text-foreground/70 group-hover:text-primary transition-colors duration-200"
+						/>
+						<span className="text-xs text-foreground/60 group-hover:text-primary font-medium mt-1">
+							Inicio
+						</span>
+					</Link>
+
+					<InputOptionsButton />
+
+					<Link
+						href="/movements"
+						className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-secondary/50 transition-all duration-200 group"
+						aria-label="Historial"
+					>
 						<History
-							size={28}
-							className="mx-auto text-zinc-500 hover:text-blue-500 transition-colors"
+							size={20}
+							className="text-foreground/70 group-hover:text-primary transition-colors duration-200"
 						/>
+						<span className="text-xs text-foreground/60 group-hover:text-primary font-medium mt-1">
+							Historial
+						</span>
 					</Link>
-				</li>
-				<li>
-					<Link href="/settings" aria-label="Configuraciones">
+
+					<Link
+						href="/settings"
+						className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-secondary/50 transition-all duration-200 group"
+						aria-label="Configuración"
+					>
 						<Settings
-							size={28}
-							className="mx-auto text-zinc-500 hover:text-blue-500 transition-colors"
+							size={20}
+							className="text-foreground/70 group-hover:text-primary transition-colors duration-200"
 						/>
+						<span className="text-xs text-foreground/60 group-hover:text-primary font-medium mt-1">
+							Config
+						</span>
 					</Link>
-				</li>
-			</ul>
+				</div>
+			</div>
 		</nav>
 	);
 }

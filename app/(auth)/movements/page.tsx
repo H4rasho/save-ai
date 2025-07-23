@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 import { getMovmentsAction } from "@/app/core/movements/actions/movments-actions";
-import MovementsMobileList from "@/app/core/movements/components/mobile-list";
+import FinancialMovementsList from "@/app/core/movements/components/mobile-list";
 import {
 	getUserCurrency,
 	getUserId,
@@ -53,7 +53,11 @@ export default async function Movements() {
 			</div>
 
 			{/* Lista de movimientos */}
-			<MovementsMobileList movements={movements} userCurrency={userCurrency} />
+			<FinancialMovementsList
+				movements={movements}
+				userCurrency={userCurrency}
+				showActions={true}
+			/>
 		</main>
 	);
 }

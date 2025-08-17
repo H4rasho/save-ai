@@ -82,7 +82,7 @@ export async function createMovement(
 	} as Movement;
 }
 
-export async function getAllMovements(
+export async function getCurrentMonthMovements(
 	userId: string,
 ): Promise<MovementWithCategoryAndMovementType[]> {
 	const now = new Date();
@@ -123,6 +123,39 @@ export async function getAllMovements(
 				sql`${movements.transaction_date} <= ${lastDay}`,
 			),
 		);
+	return rows.map((row) => ({
+		...row,
+		is_recurring: Boolean(row.is_recurring),
+	})) as MovementWithCategoryAndMovementType[];
+}
+
+export async function getAllMovements(
+	userId: string,
+): Promise<MovementWithCategoryAndMovementType[]> {
+	const rows = await db
+		.select({
+			id: movements.id,
+			clerk_id: movements.clerk_id,
+			category_id: movements.category_id,
+			movement_type_id: movements.movement_type_id,
+			name: movements.name,
+			amount: movements.amount,
+			is_recurring: movements.is_recurring,
+			recurrence_period: movements.recurrence_period,
+			recurrence_start: movements.recurrence_start,
+			recurrence_end: movements.recurrence_end,
+			created_at: movements.created_at,
+			category_name: categories.name,
+			movement_type_name: movement_types.name,
+			transaction_date: movements.transaction_date,
+		})
+		.from(movements)
+		.leftJoin(categories, eq(movements.category_id, categories.id))
+		.innerJoin(
+			movement_types,
+			eq(movements.movement_type_id, movement_types.id),
+		)
+		.where(eq(movements.clerk_id, userId));
 	return rows.map((row) => ({
 		...row,
 		is_recurring: Boolean(row.is_recurring),

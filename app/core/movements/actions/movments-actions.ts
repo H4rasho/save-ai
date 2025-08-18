@@ -8,8 +8,11 @@ import { revalidateTag } from "next/cache";
 import { z } from "zod";
 import { MovementTypeDict } from "../const/movement-type-dict";
 import {
+	createMovementForUser,
+	validateMovementData,
+} from "../functions/movement-function";
+import {
 	createManyMovements,
-	createMovement,
 	deleteMovement,
 	getAllMovements,
 	getBalance,
@@ -29,28 +32,28 @@ export async function createMovmentAction(
 	const form = Object.fromEntries(formData);
 	const userId = await getUserId();
 	if (!userId) throw new Error("No user id");
+
 	const movementType =
 		MovementTypeDict[form.movementType as keyof typeof MovementTypeDict];
 
-	//TODO: create a recurring movement
-	const newMovement: CreateMovement = {
-		clerk_id: userId.toString(),
+	const movementData: CreateNotRecurringMovement = {
 		amount: Number(form.amount),
 		name: form.description as string,
-		is_recurring: false,
 		movement_type_id: movementType,
-		created_at: new Date().toISOString(),
 		category_id: Number(form.category),
-		recurrence_start: null,
-		recurrence_end: null,
-		recurrence_period: null,
 		transaction_date: form.date as string,
+		created_at: Date.now().toString(),
 	};
 
 	try {
-		const _createdMovement = await createMovement(newMovement);
+		validateMovementData(movementData);
+		const _createdMovement = await createMovementForUser(
+			movementData,
+			userId.toString(),
+		);
 	} catch (error) {
 		console.error(error);
+		throw error;
 	}
 }
 

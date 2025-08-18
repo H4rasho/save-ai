@@ -1,6 +1,10 @@
 import { getUserCategoriesAction } from "@/app/core/categories/actions/categories-actions";
 import { getMovementTypes } from "@/app/core/movement-types.ts/repository/movement-type-repository";
 import {
+	createMovementForUser,
+	validateMovementData,
+} from "@/app/core/movements/functions/movement-function";
+import {
 	getAllMovements,
 	getCurrentMonthMovements,
 } from "@/app/core/movements/repository/movements-repository";
@@ -143,13 +147,47 @@ const handler = createMcpHandler((server) => {
 						content: [{ type: "text", text: "Unauthorized: missing user id" }],
 					};
 				}
+
+				const movementData = params.movement;
+
+				console.log({ movementData });
+
+				// Validate the movement data
+				validateMovementData(movementData);
+
+				// Create the movement
+				const createdMovement = await createMovementForUser(
+					movementData,
+					userId,
+				);
+
 				return {
-					content: [{ type: "text", text: JSON.stringify(params) }],
+					content: [
+						{
+							type: "text",
+							text: JSON.stringify({
+								success: true,
+								movement: createdMovement,
+								message: "Movement created successfully",
+							}),
+						},
+					],
 				};
 			} catch (error) {
 				console.error(error);
 				return {
-					content: [{ type: "text", text: "Error creating movement" }],
+					content: [
+						{
+							type: "text",
+							text: JSON.stringify({
+								success: false,
+								error:
+									error instanceof Error
+										? error.message
+										: "Error creating movement",
+							}),
+						},
+					],
 				};
 			}
 		},

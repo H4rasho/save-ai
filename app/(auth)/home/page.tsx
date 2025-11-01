@@ -5,14 +5,18 @@ import {
 } from "@/app/core/movements/actions/movments-actions";
 import FinancialMovementsList from "@/app/core/movements/components/mobile-list";
 import {
+	getCurrentUser,
 	getUserCurrency,
-	getUserId,
 } from "@/app/core/user/actions/user-actions";
 import { Scale, TrendingDown, TrendingUp, Wallet } from "lucide-react";
 import { unstable_cache } from "next/cache";
+import { redirect } from "next/navigation";
 
 export default async function Home() {
-	const userId = await getUserId();
+	const user = await getCurrentUser();
+	if (!user) return redirect("/welcome");
+	const userId = user.clerk_id;
+
 	const getAllMovementsCached = unstable_cache(
 		async (userId: string) => getMovmentsAction(userId),
 		["movements-list"],

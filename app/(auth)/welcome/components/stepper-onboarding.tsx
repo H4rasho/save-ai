@@ -10,6 +10,7 @@ import { SelectYourCategories } from "./select-your-categories";
 
 import { createUserProfile } from "@/lib/create-user-profile";
 import type { Income } from "@/types/income";
+import { redirect } from "next/navigation";
 import { CreateProfile } from "./create-profile";
 import { FixedExpensesForm } from "./fixed-expenses-form";
 import { IncomeForm } from "./income-form";
@@ -56,13 +57,14 @@ export function StepperOnboarding({ currency }: StepperOnboardingProps) {
 	const stepper = useStepper();
 	const currentIndex = utils.getIndex(stepper.current.id);
 
-	const handleSubmit = () => {
-		createUserProfile({
+	const handleSubmit = async () => {
+		await createUserProfile({
 			selectedCurrency,
 			categories,
 			incomeSources,
 			fixedExpenses,
 		});
+		redirect("/home");
 	};
 
 	return (

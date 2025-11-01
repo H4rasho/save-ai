@@ -111,6 +111,7 @@ export async function addMovmentsFromFileAction(
 		throw new Error("No file uploaded");
 	}
 	const userId = await getUserId();
+	if (!userId) throw new Error("No user id");
 	const userCategories = await getUserCategoriesAction(userId);
 	const fileContent = await file.arrayBuffer();
 	const categoriesDescription = userCategories

@@ -12,6 +12,7 @@ import { ArrowLeftRight, List } from "lucide-react";
 
 export default async function Movements() {
 	const userId = await getUserId();
+	if (!userId) return;
 	const movements = await getMovmentsAction(userId);
 	const userCurrency = await getUserCurrency();
 	const categories = await getUserCategoriesAction(userId);

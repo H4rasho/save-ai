@@ -17,6 +17,7 @@ import {
 	getAllMovements,
 	getBalance,
 	getTotalsByType,
+	updateMovement,
 } from "../repository/movements-repository";
 import type {
 	CreateMovement,
@@ -240,6 +241,37 @@ export async function deleteMovmentAction(_prevState: unknown, id: number) {
 	} catch (error) {
 		console.error(error);
 		throw error;
+	}
+}
+
+export async function updateMovementAction(
+	_prevState: unknown,
+	formData: FormData,
+): Promise<{ success: boolean; error?: string }> {
+	const idRaw = formData.get("id");
+	if (!idRaw) return { success: false, error: "No id provided" };
+	const id = Number(idRaw);
+
+	const name = String(formData.get("name") ?? "");
+	const amount = Number(formData.get("amount") ?? 0);
+	const categoryIdRaw = formData.get("category_id");
+	const category_id = categoryIdRaw ? Number(categoryIdRaw) : null;
+	const transaction_date = (formData.get("transaction_date") as string) ?? null;
+
+	if (!name) return { success: false, error: "Name is required" };
+	if (!Number.isFinite(amount))
+		return { success: false, error: "Amount is invalid" };
+
+	try {
+		await updateMovement(id, { name, amount, category_id, transaction_date });
+		revalidateTag("movement");
+		return { success: true };
+	} catch (error) {
+		console.error(error);
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "Error al actualizar",
+		};
 	}
 }
 

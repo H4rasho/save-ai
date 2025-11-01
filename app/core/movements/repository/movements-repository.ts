@@ -232,3 +232,23 @@ export async function getBalance(userId: string): Promise<number> {
 export async function deleteMovement(id: number): Promise<void> {
 	await db.delete(movements).where(eq(movements.id, id));
 }
+
+export async function updateMovement(
+	id: number,
+	data: {
+		name: string;
+		amount: number;
+		category_id: number | null;
+		transaction_date: string | null;
+	},
+): Promise<void> {
+	await db
+		.update(movements)
+		.set({
+			name: data.name,
+			amount: data.amount,
+			category_id: data.category_id,
+			transaction_date: data.transaction_date,
+		})
+		.where(eq(movements.id, id));
+}

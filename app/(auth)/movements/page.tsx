@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
+import { getUserCategoriesAction } from "@/app/core/categories/actions/categories-actions";
 import { getMovmentsAction } from "@/app/core/movements/actions/movments-actions";
 import FinancialMovementsList from "@/app/core/movements/components/mobile-list";
 import {
@@ -13,6 +14,7 @@ export default async function Movements() {
 	const userId = await getUserId();
 	const movements = await getMovmentsAction(userId);
 	const userCurrency = await getUserCurrency();
+	const categories = await getUserCategoriesAction(userId);
 
 	return (
 		<main className="flex flex-col min-h-screen max-w-md mx-auto py-6 md:hidden">
@@ -57,6 +59,7 @@ export default async function Movements() {
 				movements={movements}
 				userCurrency={userCurrency}
 				showActions={true}
+				categories={categories}
 			/>
 		</main>
 	);

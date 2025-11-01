@@ -11,6 +11,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import type { Category } from "@/types/income";
 import {
 	ArrowDownCircle,
 	ArrowUpCircle,
@@ -22,12 +23,13 @@ import {
 	Tag,
 	Trash2,
 } from "lucide-react";
-import { startTransition, useActionState } from "react";
+import { startTransition, useActionState, useState } from "react";
 import { deleteMovmentAction } from "../actions/movments-actions";
 import {
 	MovementType,
 	type MovementWithCategoryAndMovementType,
 } from "../types/movement-type";
+import { EditMovementDialog } from "./edit-movement-dialog";
 
 interface FinancialMovementsListProps {
 	movements: MovementWithCategoryAndMovementType[];
@@ -38,6 +40,7 @@ interface FinancialMovementsListProps {
 	showActions?: boolean; // Nueva prop para controlar las acciones
 	maxItems?: number; // Nueva prop para limitar elementos
 	className?: string; // Para personalizar estilos
+	categories?: Category[]; // para el dialogo de edicion
 }
 
 export default function FinancialMovementsList({
@@ -48,11 +51,16 @@ export default function FinancialMovementsList({
 	showActions = true, // Por defecto muestra las acciones
 	maxItems, // Sin límite por defecto
 	className,
+	categories = [],
 }: FinancialMovementsListProps) {
 	const [_, deleteAction, _isPending] = useActionState(
 		deleteMovmentAction,
 		null,
 	);
+	const [editOpen, setEditOpen] = useState(false);
+	const [selectedMovement, setSelectedMovement] =
+		useState<MovementWithCategoryAndMovementType | null>(null);
+	const [dropdownOpen, setDropdownOpen] = useState<Record<number, boolean>>({});
 
 	const formatAmount = (amount: number) => {
 		const { locale, currency: resolvedCurrency } =
@@ -163,7 +171,15 @@ export default function FinancialMovementsList({
 
 							{/* Menú de acciones - solo si showActions es true */}
 							{showActions && (
-								<DropdownMenu>
+								<DropdownMenu
+									open={dropdownOpen[movement.id] || false}
+									onOpenChange={(open) => {
+										setDropdownOpen((prev) => ({
+											...prev,
+											[movement.id]: open,
+										}));
+									}}
+								>
 									<DropdownMenuTrigger asChild>
 										<Button
 											variant="ghost"
@@ -176,7 +192,15 @@ export default function FinancialMovementsList({
 									</DropdownMenuTrigger>
 									<DropdownMenuContent align="end" className="w-48">
 										<DropdownMenuItem
-											onClick={() => onEdit?.(movement)}
+											onClick={() => {
+												setSelectedMovement(movement);
+												setEditOpen(true);
+												setDropdownOpen((prev) => ({
+													...prev,
+													[movement.id]: false,
+												}));
+												onEdit?.(movement);
+											}}
 											className="cursor-pointer py-3"
 										>
 											<Edit className="mr-2 h-4 w-4" />
@@ -211,6 +235,12 @@ export default function FinancialMovementsList({
 					</div>
 				</div>
 			))}
+			<EditMovementDialog
+				open={editOpen}
+				onOpenChange={setEditOpen}
+				movement={selectedMovement}
+				categories={categories}
+			/>
 		</div>
 	);
 }

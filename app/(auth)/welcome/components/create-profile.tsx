@@ -1,5 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
+import { CONFIG } from "@/config/config";
+
+const { APP_NAME } = CONFIG;
 
 interface CreateProfileProps {
 	onSubmit: () => void;
@@ -12,7 +15,7 @@ export function CreateProfile({ onSubmit, isLoading }: CreateProfileProps) {
 			<h3 className="font-medium text-sm sm:text-base">Create your Profile</h3>
 			<p className="text-muted-foreground text-center max-w-xs text-xs sm:text-sm">
 				You are almost done! Please review your information and create your
-				profile to get started with Save IA.
+				profile to get started with {APP_NAME}.
 			</p>
 			<Button
 				type="submit"

@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { CONFIG } from "@/config/config";
 import { SignInButton } from "@clerk/nextjs";
 import {
 	ArrowRight,
@@ -13,6 +14,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+const { APP_NAME } = CONFIG;
+
 export default function LandingPage() {
 	return (
 		<div className="min-h-screen bg-black text-white">
@@ -23,7 +26,7 @@ export default function LandingPage() {
 						<div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-sky-400 rounded-lg flex items-center justify-center">
 							<Wallet className="w-5 h-5 text-black" />
 						</div>
-						<span className="text-xl font-bold">ExpenseFlow</span>
+						<span className="text-xl font-bold">{APP_NAME}</span>
 					</div>
 					<SignInButton mode="modal">
 						<Button
@@ -224,7 +227,7 @@ export default function LandingPage() {
 							<div className="w-6 h-6 bg-gradient-to-br from-blue-400 to-sky-400 rounded flex items-center justify-center">
 								<Wallet className="w-4 h-4 text-black" />
 							</div>
-							<span className="font-semibold">ExpenseFlow</span>
+							<span className="font-semibold">{APP_NAME}</span>
 						</div>
 						<div className="flex gap-6 text-sm text-gray-400">
 							<Link href="#" className="hover:text-white transition-colors">
@@ -239,7 +242,7 @@ export default function LandingPage() {
 						</div>
 					</div>
 					<div className="text-center text-sm text-gray-500 mt-4 pt-4 border-t border-gray-800">
-						© 2024 ExpenseFlow. Todos los derechos reservados.
+						© 202 {APP_NAME}. Todos los derechos reservados.
 					</div>
 				</div>
 			</footer>

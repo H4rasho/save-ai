@@ -10,10 +10,13 @@ import { Separator } from "@/components/ui/separator";
 import { CheckYourCurrency } from "./check-your-currency";
 import { SelectYourCategories } from "./select-your-categories";
 
+import { CONFIG } from "@/config/config";
 import type { Income } from "@/types/income";
 import { CreateProfile } from "./create-profile";
 import { FixedExpensesForm } from "./fixed-expenses-form";
 import { IncomeForm } from "./income-form";
+
+const { APP_NAME } = CONFIG;
 
 const { useStepper, steps, utils } = defineStepper(
 	{
@@ -97,7 +100,9 @@ export function StepperOnboarding({ currency }: StepperOnboardingProps) {
 	return (
 		<div className="space-y-4 sm:space-y-6 p-4 sm:p-6 border rounded-lg w-full max-w-[500px] mx-auto">
 			<div className="flex flex-col sm:flex-row justify-between gap-2">
-				<h2 className="text-lg sm:text-xl font-medium">Welcome to Save IA</h2>
+				<h2 className="text-lg sm:text-xl font-medium">
+					Welcome to {APP_NAME}
+				</h2>
 				<div className="flex items-center gap-2">
 					<span className="text-xs sm:text-sm text-muted-foreground">
 						Step {currentIndex + 1} of {steps.length}

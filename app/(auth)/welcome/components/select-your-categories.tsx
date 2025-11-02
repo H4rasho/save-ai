@@ -32,8 +32,9 @@ export const SelectYourCategories = ({
 						size="sm"
 						key={category}
 						onClick={() => handleSelectCategory(category)}
+						className="text-xs sm:text-sm"
 					>
-						<X />
+						<X className="w-3 h-3 sm:w-4 sm:h-4" />
 						{category}
 					</Button>
 				))}
@@ -42,8 +43,12 @@ export const SelectYourCategories = ({
 				placeholder="Add Category"
 				value={newCategory}
 				onChange={(e) => setNewCategory(e.target.value)}
+				className="text-sm"
 			/>
-			<Button onClick={() => handleAddCategory({ category: newCategory })}>
+			<Button
+				onClick={() => handleAddCategory({ category: newCategory })}
+				className="text-xs sm:text-sm"
+			>
 				Add Category
 			</Button>
 		</div>

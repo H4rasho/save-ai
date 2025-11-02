@@ -36,34 +36,42 @@ export function IncomeForm({
 
 	return (
 		<div className="flex flex-col gap-4">
-			<h3 className="font-medium text-base">Income</h3>
-			<div className="flex gap-2">
+			<h3 className="font-medium text-sm sm:text-base">Income</h3>
+			<div className="flex flex-col sm:flex-row gap-2">
 				<Input
 					placeholder="Income source"
 					value={source}
 					onChange={(e) => setSource(e.target.value)}
+					className="text-sm"
 				/>
 				<Input
 					placeholder="Amount"
 					type="number"
 					value={amount}
 					onChange={(e) => setAmount(e.target.value)}
+					className="text-sm"
 				/>
-				<Button onClick={handleAddIncome}>Add</Button>
+				<Button
+					onClick={handleAddIncome}
+					className="text-xs sm:text-sm whitespace-nowrap"
+				>
+					Add
+				</Button>
 			</div>
 			<ul className="flex flex-col gap-2">
 				{incomes.map((income) => (
 					<li
 						key={income.id}
-						className="flex justify-between items-center border p-2 rounded"
+						className="flex flex-col sm:flex-row justify-between items-start sm:items-center border p-2 rounded gap-2"
 					>
-						<span>
+						<span className="text-xs sm:text-sm">
 							{income.source}: ${income.amount}
 						</span>
 						<Button
 							size="sm"
 							variant="destructive"
 							onClick={() => handleRemoveIncome(income.id)}
+							className="text-xs w-full sm:w-auto"
 						>
 							Delete
 						</Button>

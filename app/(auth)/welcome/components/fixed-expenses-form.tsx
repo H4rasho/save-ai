@@ -34,34 +34,42 @@ export function FixedExpensesForm({
 
 	return (
 		<div className="flex flex-col gap-4">
-			<h3 className="font-medium text-base">Fixed Expenses</h3>
-			<div className="flex gap-2">
+			<h3 className="font-medium text-sm sm:text-base">Fixed Expenses</h3>
+			<div className="flex flex-col sm:flex-row gap-2">
 				<Input
 					placeholder="Expense name"
 					value={expenseName}
 					onChange={(e) => setExpenseName(e.target.value)}
+					className="text-sm"
 				/>
 				<Input
 					placeholder="Amount"
 					type="number"
 					value={amount}
 					onChange={(e) => setAmount(e.target.value)}
+					className="text-sm"
 				/>
-				<Button onClick={handleAddExpense}>Add</Button>
+				<Button
+					onClick={handleAddExpense}
+					className="text-xs sm:text-sm whitespace-nowrap"
+				>
+					Add
+				</Button>
 			</div>
 			<ul className="flex flex-col gap-2">
 				{expenses.map((expense, index) => (
 					<li
 						key={expense.name}
-						className="flex justify-between items-center border p-2 rounded"
+						className="flex flex-col sm:flex-row justify-between items-start sm:items-center border p-2 rounded gap-2"
 					>
-						<span>
+						<span className="text-xs sm:text-sm">
 							{expense.name}: ${expense.amount}
 						</span>
 						<Button
 							size="sm"
 							variant="destructive"
 							onClick={() => handleRemoveExpense(index)}
+							className="text-xs w-full sm:w-auto"
 						>
 							Delete
 						</Button>

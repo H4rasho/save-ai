@@ -17,6 +17,7 @@ export const CheckYourCurrency = ({
 				</label>
 				<Input
 					id="currency"
+					name="currency"
 					placeholder={currency}
 					className="w-full"
 					onChange={(e) => onCurrencyChange(e.target.value)}

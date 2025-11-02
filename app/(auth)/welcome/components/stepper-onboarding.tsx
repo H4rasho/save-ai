@@ -1,7 +1,9 @@
 "use client";
 
 import { defineStepper } from "@stepperize/react";
+import { useRouter } from "next/navigation";
 import { Fragment, useState } from "react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -9,7 +11,6 @@ import { CheckYourCurrency } from "./check-your-currency";
 import { SelectYourCategories } from "./select-your-categories";
 
 import type { Income } from "@/types/income";
-import { redirect } from "next/navigation";
 import { CreateProfile } from "./create-profile";
 import { FixedExpensesForm } from "./fixed-expenses-form";
 import { IncomeForm } from "./income-form";
@@ -54,14 +55,18 @@ export function StepperOnboarding({ currency }: StepperOnboardingProps) {
 	const [fixedExpenses, setFixedExpenses] = useState<string[]>([]);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 
+	const router = useRouter();
 	const stepper = useStepper();
 	const currentIndex = utils.getIndex(stepper.current.id);
 
 	const handleSubmit = async () => {
 		setIsLoading(true);
 		try {
-			await fetch("/api/user", {
+			const response = await fetch("/api/user", {
 				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
 				body: JSON.stringify({
 					selectedCurrency,
 					categories,
@@ -69,9 +74,22 @@ export function StepperOnboarding({ currency }: StepperOnboardingProps) {
 					fixedExpenses,
 				}),
 			});
-			redirect("/home");
+
+			if (response.ok) {
+				toast.success("Profile created successfully!");
+				router.push("/home");
+			} else {
+				const errorData = await response.json();
+				toast.error("Error creating profile", {
+					description: errorData.message || "Please try again later.",
+				});
+				setIsLoading(false);
+			}
 		} catch (error) {
 			console.error(error);
+			toast.error("Error creating profile", {
+				description: "An unexpected error occurred. Please try again.",
+			});
 			setIsLoading(false);
 		}
 	};

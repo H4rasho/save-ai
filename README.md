@@ -55,6 +55,38 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
+## 🗄️ Database Migrations
+
+### Development
+```bash
+# Generate migrations after schema changes
+pnpm db:generate
+
+# View database
+pnpm db:studio
+```
+
+### Production Deployment
+
+**Opción 1: Automático con Build**
+
+En Vercel, configura el Build Command como:
+```bash
+pnpm db:migrate:prod && pnpm build
+```
+
+**Opción 2: Manual**
+```bash
+# Set environment variables
+export TURSO_DATABASE_URL="your_production_url"
+export TURSO_AUTH_TOKEN="your_auth_token"
+
+# Run migrations
+pnpm db:migrate:prod
+```
+
+📖 Ver [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) para guía completa de despliegue.
+
 ## Deploy on Vercel
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.

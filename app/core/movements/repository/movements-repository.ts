@@ -12,6 +12,13 @@ import {
 } from "@/app/core/movements/types/movement-type";
 import { getUserId } from "@/app/core/user/actions/user-actions";
 import { db } from "@/database/database";
+import {
+	decryptMovement,
+	decryptMovementsWithRelations,
+	encryptMovement,
+	encryptMovementUpdateData,
+	encryptMovements,
+} from "@/lib/encrypted_movements";
 import { and, eq, sql } from "drizzle-orm";
 
 export async function createManyMovements(
@@ -22,13 +29,17 @@ export async function createManyMovements(
 	if (movementsData.length === 0) {
 		return;
 	}
+
+	// Encrypt sensitive data before saving
+	const encryptedMovements = encryptMovements(movementsData);
+
 	await db.insert(movements).values(
-		movementsData.map((movement) => ({
+		encryptedMovements.map((movement) => ({
 			clerk_id: clerkId,
 			category_id: movement.category_id ?? null,
 			movement_type_id: movement.movement_type_id,
 			name: movement.name,
-			amount: movement.amount,
+			amount: movement.amount as unknown as number,
 			is_recurring: 0,
 			recurrence_period: null,
 			recurrence_start: null,
@@ -56,14 +67,24 @@ export async function createMovement(
 		created_at,
 	} = movement;
 
+	// Encrypt sensitive data before saving
+	const encryptedMovement = encryptMovement({
+		category_id,
+		movement_type_id,
+		name,
+		amount,
+		transaction_date,
+		created_at,
+	});
+
 	const [inserted] = await db
 		.insert(movements)
 		.values({
 			clerk_id,
 			category_id: category_id ?? null,
 			movement_type_id,
-			name,
-			amount,
+			name: encryptedMovement.name,
+			amount: encryptedMovement.amount as unknown as number,
 			is_recurring: is_recurring ? 1 : 0,
 			recurrence_period: recurrence_period ?? null,
 			recurrence_start: recurrence_start ?? null,
@@ -76,10 +97,14 @@ export async function createMovement(
 	if (!inserted) {
 		throw new Error("No se pudo recuperar el movimiento insertado");
 	}
-	return {
+
+	// Decrypt before returning
+	const decrypted = decryptMovement({
 		...inserted,
 		is_recurring: Boolean(inserted.is_recurring),
-	} as Movement;
+	} as Movement);
+
+	return decrypted;
 }
 
 export async function getCurrentMonthMovements(
@@ -123,10 +148,14 @@ export async function getCurrentMonthMovements(
 				sql`${movements.transaction_date} <= ${lastDay}`,
 			),
 		);
-	return rows.map((row) => ({
+
+	const normalizedRows = rows.map((row) => ({
 		...row,
 		is_recurring: Boolean(row.is_recurring),
 	})) as MovementWithCategoryAndMovementType[];
+
+	// Decrypt sensitive data before returning
+	return decryptMovementsWithRelations(normalizedRows);
 }
 
 export async function getAllMovements(
@@ -156,10 +185,14 @@ export async function getAllMovements(
 			eq(movements.movement_type_id, movement_types.id),
 		)
 		.where(eq(movements.clerk_id, userId));
-	return rows.map((row) => ({
+
+	const normalizedRows = rows.map((row) => ({
 		...row,
 		is_recurring: Boolean(row.is_recurring),
 	})) as MovementWithCategoryAndMovementType[];
+
+	// Decrypt sensitive data before returning
+	return decryptMovementsWithRelations(normalizedRows);
 }
 
 export async function getTotalsByType(
@@ -242,13 +275,16 @@ export async function updateMovement(
 		transaction_date: string | null;
 	},
 ): Promise<void> {
+	// Encrypt sensitive data before updating
+	const encryptedData = encryptMovementUpdateData(data);
+
 	await db
 		.update(movements)
 		.set({
-			name: data.name,
-			amount: data.amount,
-			category_id: data.category_id,
-			transaction_date: data.transaction_date,
+			name: encryptedData.name,
+			amount: encryptedData.amount as unknown as number,
+			category_id: encryptedData.category_id,
+			transaction_date: encryptedData.transaction_date,
 		})
 		.where(eq(movements.id, id));
 }

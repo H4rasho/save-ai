@@ -1,7 +1,8 @@
-const { TURSO_DATABASE_URL, TURSO_AUTH_TOKEN } = process.env;
+const { TURSO_DATABASE_URL, TURSO_AUTH_TOKEN, ENCRYPTION_KEY } = process.env;
 
 export const CONFIG = {
 	DATABASE_URL: TURSO_DATABASE_URL ?? "",
 	DATABASE_AUTH_TOKEN: TURSO_AUTH_TOKEN ?? "",
+	ENCRYPTION_KEY: ENCRYPTION_KEY ?? "",
 	APP_NAME: "SmartSaver",
 } as const;

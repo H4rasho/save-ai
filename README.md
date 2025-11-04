@@ -1,5 +1,31 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## 🔐 Security Features
+
+This application includes **AES-256-GCM encryption** for sensitive financial data:
+- Movement names/descriptions are encrypted at rest
+- Transaction amounts are encrypted at rest
+- Automatic encryption/decryption in the data layer
+
+See [lib/ENCRYPTION_README.md](lib/ENCRYPTION_README.md) for complete encryption documentation.
+
+### Quick Setup
+
+1. Generate an encryption key:
+```bash
+node scripts/generate_encryption_key.js
+```
+
+2. Add to your `.env` file:
+```bash
+ENCRYPTION_KEY=your-generated-key-here
+```
+
+3. (Optional) If you have existing data, run the migration:
+```bash
+npx tsx scripts/migrate_encrypt_data.ts
+```
+
 ## Getting Started
 
 First, run the development server:

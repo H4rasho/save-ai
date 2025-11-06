@@ -43,33 +43,38 @@ export const SelectCombobox: React.FC<SelectComboboxProps> = ({
 	const [open, setOpen] = useState(false);
 
 	return (
-		<div>
+		<div className="w-full">
 			{label && (
 				<label htmlFor={name} className="block mb-1 text-sm font-medium">
 					{label}
 				</label>
 			)}
-			<Popover open={open} onOpenChange={setOpen}>
+			<Popover open={open} onOpenChange={setOpen} modal={true}>
 				<PopoverTrigger asChild>
 					<Button
 						type="button"
 						variant="outline"
 						aria-expanded={open}
 						className="w-full justify-between"
+						disabled={options.length === 0}
 					>
 						{value
 							? options.find((opt) => opt.value === value)?.label
-							: placeholder}
+							: options.length === 0
+								? "No hay opciones disponibles"
+								: placeholder}
 						<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 					</Button>
 				</PopoverTrigger>
 				<PopoverContent
-					className="w-full p-0"
+					className="w-[var(--radix-popover-trigger-width)] p-0 z-[100]"
+					align="start"
+					side="bottom"
 					onClick={(e) => e.stopPropagation()}
 					onMouseDown={(e) => e.stopPropagation()}
 				>
 					<Command>
-						<CommandInput placeholder={`Buscar...`} className="h-9" />
+						<CommandInput placeholder="Buscar..." className="h-9" />
 						<CommandList>
 							<CommandEmpty>No se encontró opción.</CommandEmpty>
 							<CommandGroup>

@@ -4,7 +4,7 @@ import { getUserCategoriesAction } from "@/app/core/categories/actions/categorie
 import { getUserId } from "@/app/core/user/actions/user-actions";
 import { openai } from "@ai-sdk/openai";
 import { generateObject } from "ai";
-import { revalidateTag } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
 import { MovementTypeDict } from "../const/movement-type-dict";
 import {
@@ -29,32 +29,38 @@ import { CreateMovementSchema } from "../types/movement-type";
 export async function createMovmentAction(
 	_prevState: unknown,
 	formData: FormData,
-) {
-	const form = Object.fromEntries(formData);
-	const userId = await getUserId();
-	if (!userId) throw new Error("No user id");
-
-	const movementType =
-		MovementTypeDict[form.movementType as keyof typeof MovementTypeDict];
-
-	const movementData: CreateNotRecurringMovement = {
-		amount: Number(form.amount),
-		name: form.description as string,
-		movement_type_id: movementType,
-		category_id: Number(form.category),
-		transaction_date: form.date as string,
-		created_at: Date.now().toString(),
-	};
-
+): Promise<{ success?: boolean; error?: string }> {
 	try {
+		const form = Object.fromEntries(formData);
+		const userId = await getUserId();
+
+		if (!userId) {
+			return { error: "Usuario no autenticado" };
+		}
+
+		const movementType =
+			MovementTypeDict[form.movementType as keyof typeof MovementTypeDict];
+
+		const movementData: CreateNotRecurringMovement = {
+			amount: Number(form.amount),
+			name: form.description as string,
+			movement_type_id: movementType,
+			category_id: Number(form.category),
+			transaction_date: form.date as string,
+			created_at: Date.now().toString(),
+		};
+
 		validateMovementData(movementData);
-		const _createdMovement = await createMovementForUser(
-			movementData,
-			userId.toString(),
-		);
+		await createMovementForUser(movementData, userId.toString());
+
+		revalidatePath("/home");
+		return { success: true };
 	} catch (error) {
 		console.error(error);
-		throw error;
+		return {
+			error:
+				error instanceof Error ? error.message : "Error al crear el movimiento",
+		};
 	}
 }
 

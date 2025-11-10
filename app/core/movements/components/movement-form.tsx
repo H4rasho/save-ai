@@ -5,11 +5,13 @@ import { Label } from "@/components/ui/label";
 import { SelectCombobox } from "@/components/ui/select-combobox";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Category } from "@/types/income";
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
+import { toast } from "sonner";
 import { MovementType } from "../types/movement-type";
 
 interface AddMovementFormProps {
 	categories: Category[];
+	onSuccess?: () => void;
 }
 
 const _initialState = {
@@ -18,13 +20,30 @@ const _initialState = {
 	description: "",
 };
 
-export function AddMovementForm({ categories }: AddMovementFormProps) {
+export function AddMovementForm({
+	categories,
+	onSuccess,
+}: AddMovementFormProps) {
 	const [movementType, setMovementType] = useState<MovementType>(
 		MovementType.EXPENSE,
 	);
 	const [selectedCategory, setSelectedCategory] = useState<string>("");
-	const [_open, _setOpen] = useState(false);
-	const [_, formAction, _isPending] = useActionState(createMovmentAction, null);
+	const [state, formAction, isPending] = useActionState(
+		createMovmentAction,
+		null,
+	);
+
+	useEffect(() => {
+		if (state?.success) {
+			toast.success("Movimiento creado exitosamente");
+			setSelectedCategory("");
+			onSuccess?.();
+		} else if (state?.error) {
+			toast.error("Error al crear movimiento", {
+				description: state.error,
+			});
+		}
+	}, [state, onSuccess]);
 
 	return (
 		<section>
@@ -83,8 +102,8 @@ export function AddMovementForm({ categories }: AddMovementFormProps) {
 						</div>
 					</>
 				)}
-				<Button type="submit" className="w-full">
-					Guardar
+				<Button type="submit" className="w-full" disabled={isPending}>
+					{isPending ? "Guardando..." : "Guardar"}
 				</Button>
 			</form>
 		</section>

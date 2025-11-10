@@ -11,15 +11,18 @@ import {
 } from "@/components/ui/dialog";
 import type { Category } from "@/types/income";
 import { Plus } from "lucide-react";
+import { useState } from "react";
 
 interface AddMovementProps {
 	categories: Category[];
 }
 
 export function AddMovement({ categories }: AddMovementProps) {
+	const [open, setOpen] = useState(false);
+
 	return (
 		<>
-			<Dialog>
+			<Dialog open={open} onOpenChange={setOpen}>
 				<DialogTrigger asChild>
 					<Button
 						variant="default"
@@ -35,7 +38,10 @@ export function AddMovement({ categories }: AddMovementProps) {
 					<DialogDescription>
 						Añade un nuevo movimiento a tu cuenta
 					</DialogDescription>
-					<AddMovementForm categories={categories} />
+					<AddMovementForm
+						categories={categories}
+						onSuccess={() => setOpen(false)}
+					/>
 				</DialogContent>
 			</Dialog>
 		</>

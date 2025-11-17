@@ -12,10 +12,16 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Coins, FolderOpen, Settings as SettingsIcon } from "lucide-react";
+import {
+	Coins,
+	FolderOpen,
+	Settings as SettingsIcon,
+	Sparkles,
+} from "lucide-react";
 import { redirect } from "next/navigation";
 import { CategoriesSettings } from "./components/categories_settings";
 import { CurrencySettings } from "./components/currency_settings";
+import { OpenAISettings } from "./components/openai_settings";
 
 export default async function Settings() {
 	const user = await getCurrentUser();
@@ -41,7 +47,7 @@ export default async function Settings() {
 			<Separator className="mb-8" />
 
 			<Tabs defaultValue="currency" className="space-y-6">
-				<TabsList className="grid w-full grid-cols-2 max-w-md">
+				<TabsList className="grid w-full grid-cols-3 max-w-2xl">
 					<TabsTrigger value="currency" className="gap-2">
 						<Coins className="w-4 h-4" />
 						Moneda
@@ -49,6 +55,10 @@ export default async function Settings() {
 					<TabsTrigger value="categories" className="gap-2">
 						<FolderOpen className="w-4 h-4" />
 						Categorías
+					</TabsTrigger>
+					<TabsTrigger value="openai" className="gap-2">
+						<Sparkles className="w-4 h-4" />
+						OpenAI
 					</TabsTrigger>
 				</TabsList>
 
@@ -95,6 +105,23 @@ export default async function Settings() {
 						</CardContent>
 					</Card>
 				</TabsContent>
+
+				<TabsContent value="openai" className="space-y-4">
+					<Card className="border-border shadow-sm">
+						<CardHeader className="border-b border-secondary-dark/20">
+							<CardTitle className="flex items-center gap-2">
+								<Sparkles className="w-5 h-5 text-primary" />
+								Configuración de OpenAI
+							</CardTitle>
+							<CardDescription className="text-secondary-foreground/80">
+								Configura tu API key para habilitar funcionalidades de IA
+							</CardDescription>
+						</CardHeader>
+						<CardContent className="pt-6">
+							<OpenAISettings />
+						</CardContent>
+					</Card>
+				</TabsContent>
 			</Tabs>
 
 			<div className="mt-8 p-4 bg-muted/50 rounded-lg border border-border">
@@ -114,6 +141,10 @@ export default async function Settings() {
 					<li>
 						• Puedes eliminar categorías que ya no uses, pero esto no afectará
 						los movimientos existentes
+					</li>
+					<li>
+						• La API key de OpenAI se guarda solo en tu navegador para mayor
+						seguridad
 					</li>
 				</ul>
 			</div>

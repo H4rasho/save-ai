@@ -2,6 +2,7 @@
 
 import { getUserCategoriesAction } from "@/app/core/categories/actions/categories-actions";
 import { getUserId } from "@/app/core/user/actions/user-actions";
+import { CONFIG } from "@/config/config";
 import { openai } from "@ai-sdk/openai";
 import { generateObject } from "ai";
 import { revalidatePath, revalidateTag } from "next/cache";
@@ -25,6 +26,8 @@ import type {
 	MovementWithCategoryAndMovementType,
 } from "../types/movement-type";
 import { CreateMovementSchema } from "../types/movement-type";
+
+const { OPENAI_API_KEY } = CONFIG;
 
 export async function createMovmentAction(
 	_prevState: unknown,
@@ -307,7 +310,7 @@ export async function extractMovementsFromAudioAction(
 			{
 				method: "POST",
 				headers: {
-					Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+					Authorization: `Bearer ${OPENAI_API_KEY}`,
 				},
 				body: (() => {
 					const formData = new FormData();

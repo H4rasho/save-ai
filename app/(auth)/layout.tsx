@@ -5,7 +5,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 	return (
 		<div>
 			<UserProfileCard />
-			<div className="px-4">{children}</div>
+			<div className="px-4 pb-16">{children}</div>
 			<NavigationMenu />
 		</div>
 	);
